@@ -28,18 +28,18 @@ const dark = {
   rackRail: "#090B1A",
   canvasGrid: "#1A1E42",
 
-  brand: "#2DD4F5",
-  onBrand: "#04202B",
-  brandPrimary: "#2DD4F5", // cyan-blue CTA
-  onBrandPrimary: "#04202B",
-  brandSecondary: "#4F7CFF", // blue
+  brand: "#2BE36F",
+  onBrand: "#03230F",
+  brandPrimary: "#2BE36F", // Zatriz green CTA
+  onBrandPrimary: "#03230F",
+  brandSecondary: "#1FB85A", // deeper green
   onBrandSecondary: "#FFFFFF",
-  brandTertiary: "#173A63", // subtle fills
-  onBrandTertiary: "#7FDBFF",
-  accent: "#FF3C8E", // magenta for charts / highlights
-  onAccent: "#FFFFFF",
-  gradientStart: "#4F7CFF",
-  gradientEnd: "#2DD4F5",
+  brandTertiary: "#0F3A22", // subtle fills
+  onBrandTertiary: "#7FF0A8",
+  accent: "#2DD4F5", // cyan for charts / highlights
+  onAccent: "#04202B",
+  gradientStart: "#1FB85A",
+  gradientEnd: "#2BE36F",
 
   success: "#3DF58C",
   onSuccess: "#03301A",
@@ -75,18 +75,18 @@ const light: typeof dark = {
   rackRail: "#D8DCF2",
   canvasGrid: "#DDE1F5",
 
-  brand: "#1E6FE8",
+  brand: "#17A74A",
   onBrand: "#FFFFFF",
-  brandPrimary: "#1E6FE8",
+  brandPrimary: "#17A74A",
   onBrandPrimary: "#FFFFFF",
-  brandSecondary: "#12B5C9",
+  brandSecondary: "#0E8A5F",
   onBrandSecondary: "#FFFFFF",
-  brandTertiary: "#DCE9FF",
-  onBrandTertiary: "#124FB0",
-  accent: "#E0297A",
+  brandTertiary: "#DDF7E6",
+  onBrandTertiary: "#0F6B32",
+  accent: "#1E6FE8",
   onAccent: "#FFFFFF",
-  gradientStart: "#1E6FE8",
-  gradientEnd: "#12B5C9",
+  gradientStart: "#17A74A",
+  gradientEnd: "#2BE36F",
 
   success: "#12995A",
   onSuccess: "#FFFFFF",

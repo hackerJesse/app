@@ -38,7 +38,7 @@ export function currentLogo(): string {
 }
 
 export function currentCompany(): string {
-  return queryClient.getQueryData<Settings>(["settings"])?.company_name || "N-Security InfraManager";
+  return queryClient.getQueryData<Settings>(["settings"])?.company_name || "Zatriz";
 }
 
 export function docHeaderHtml() {

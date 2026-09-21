@@ -67,6 +67,7 @@ export default function SettingsScreen() {
   const removeOp = useMutation({ mutationFn: () => api("/account/operator", { method: "DELETE" }), onSuccess: () => qc.invalidateQueries({ queryKey: ["operator"] }) });
   const [uploading, setUploading] = useState(false);
   const isAdmin = user?.role === "admin";
+  const canEdit = user?.role !== "operator"; // assinante edita logo, empresa e e-mail da própria conta
 
   useEffect(() => {
     if (settings.data) {
@@ -169,39 +170,43 @@ export default function SettingsScreen() {
                 {settings.data?.logo_data_url ? <Image source={{ uri: settings.data.logo_data_url }} style={{ width: "100%", height: "100%" }} contentFit="contain" /> : <Icon name="image-outline" size={28} color={colors.muted} />}
               </View>
               <View style={{ flex: 1, gap: 6 }}>
-                <Text style={styles.hint}>Logo da empresa: PNG ou SVG sem fundo, recomendado 600 × 200 px (proporção 3:1), até 1 MB. Aparece na tela de login (centralizada), no menu, nas etiquetas e nos relatórios em PDF.</Text>
-                {isAdmin ? <Button small title={settings.data?.logo_path ? "Trocar logo" : "Enviar logo"} icon="cloud-upload-outline" variant="secondary" onPress={pickLogo} loading={uploading} testID="upload-logo" /> : <Text style={styles.hint}>Somente administradores podem alterar.</Text>}
+                <Text style={styles.hint}>{isAdmin ? "Logo da empresa: PNG ou SVG sem fundo, recomendado 600 × 200 px (proporção 3:1), até 1 MB. Aparece na tela de login (centralizada), no menu, nas etiquetas e nos relatórios em PDF." : "Logo da sua empresa: PNG ou SVG sem fundo, recomendado 600 × 200 px (3:1), até 1 MB. Sai nos orçamentos, etiquetas e relatórios impressos."}</Text>
+                {canEdit ? <Button small title={settings.data?.logo_path ? "Trocar logo" : "Enviar logo"} icon="cloud-upload-outline" variant="secondary" onPress={pickLogo} loading={uploading} testID="upload-logo" /> : <Text style={styles.hint}>Operadores não podem alterar.</Text>}
               </View>
             </Row>
           </Card>
           {isAdmin ? <Button small title="Imagem da tela de login (JPG/PNG 1080 × 1600 px, até 2 MB)" icon="image-outline" variant="secondary" onPress={pickLoginImage} loading={uploadingBg} testID="upload-login-image" /> : null}
-          <Input label="Link do tutorial em PDF" value={pdfUrl} onChangeText={setPdfUrl} placeholder="https://.../manual.pdf" autoCapitalize="none" editable={isAdmin} testID="tutorial-pdf" />
-          <Input label="Link do tutorial em vídeo" value={videoUrl} onChangeText={setVideoUrl} placeholder="https://youtube.com/..." autoCapitalize="none" editable={isAdmin} testID="tutorial-video" />
-          <Input label={t("companyName")} value={company} onChangeText={setCompany} placeholder="N-Security" editable={isAdmin} testID="company-name" />
-          <Input label={t("latencyWarn")} value={latency} onChangeText={setLatency} keyboardType="number-pad" editable={isAdmin} testID="latency-warn" />
-          {isAdmin ? <Button title={t("saveSettings")} icon="save-outline" onPress={save} loading={saveSettings.isPending} testID="settings-save" /> : null}
+          {isAdmin ? (
+            <>
+              <Input label="Link do tutorial em PDF" value={pdfUrl} onChangeText={setPdfUrl} placeholder="https://.../manual.pdf" autoCapitalize="none" testID="tutorial-pdf" />
+              <Input label="Link do tutorial em vídeo" value={videoUrl} onChangeText={setVideoUrl} placeholder="https://youtube.com/..." autoCapitalize="none" testID="tutorial-video" />
+            </>
+          ) : null}
+          <Input label={t("companyName")} value={company} onChangeText={setCompany} placeholder="Minha Empresa" editable={canEdit} testID="company-name" />
+          {isAdmin ? <Input label={t("latencyWarn")} value={latency} onChangeText={setLatency} keyboardType="number-pad" testID="latency-warn" /> : null}
+          {canEdit ? <Button title={t("saveSettings")} icon="save-outline" onPress={save} loading={saveSettings.isPending} testID="settings-save" /> : null}
         </View>
 
         <SectionTitle title="Alertas por e-mail (SMTP)" />
         <View style={{ paddingHorizontal: 16, gap: 12 }}>
           <Text style={styles.hint}>Envia e-mail quando um servidor ficar offline e um resumo diário das preventivas vencidas/próximas. Ex.: Gmail smtp.gmail.com porta 587 (senha de app); Outlook smtp.office365.com 587; porta 465 usa SSL.</Text>
           <Row gap={8}>
-            <Input style={{ flex: 2 }} label="Servidor SMTP" value={smtp.smtp_host} onChangeText={(v) => setSmtp({ ...smtp, smtp_host: v })} placeholder="smtp.gmail.com" autoCapitalize="none" editable={isAdmin} testID="smtp-host" />
-            <Input style={{ flex: 1 }} label="Porta" value={smtp.smtp_port} onChangeText={(v) => setSmtp({ ...smtp, smtp_port: v })} keyboardType="number-pad" editable={isAdmin} testID="smtp-port" />
+            <Input style={{ flex: 2 }} label="Servidor SMTP" value={smtp.smtp_host} onChangeText={(v) => setSmtp({ ...smtp, smtp_host: v })} placeholder="smtp.gmail.com" autoCapitalize="none" editable={canEdit} testID="smtp-host" />
+            <Input style={{ flex: 1 }} label="Porta" value={smtp.smtp_port} onChangeText={(v) => setSmtp({ ...smtp, smtp_port: v })} keyboardType="number-pad" editable={canEdit} testID="smtp-port" />
           </Row>
           <Row gap={8}>
-            <Input style={{ flex: 1 }} label="Usuário" value={smtp.smtp_user} onChangeText={(v) => setSmtp({ ...smtp, smtp_user: v })} autoCapitalize="none" editable={isAdmin} testID="smtp-user" />
-            <Input style={{ flex: 1 }} label="Senha" value={smtp.smtp_pass} onChangeText={(v) => setSmtp({ ...smtp, smtp_pass: v })} secureTextEntry editable={isAdmin} testID="smtp-pass" />
+            <Input style={{ flex: 1 }} label="Usuário" value={smtp.smtp_user} onChangeText={(v) => setSmtp({ ...smtp, smtp_user: v })} autoCapitalize="none" editable={canEdit} testID="smtp-user" />
+            <Input style={{ flex: 1 }} label="Senha" value={smtp.smtp_pass} onChangeText={(v) => setSmtp({ ...smtp, smtp_pass: v })} secureTextEntry editable={canEdit} testID="smtp-pass" />
           </Row>
           <Row gap={8}>
-            <Input style={{ flex: 1 }} label="Remetente" value={smtp.smtp_from} onChangeText={(v) => setSmtp({ ...smtp, smtp_from: v })} autoCapitalize="none" placeholder="alertas@empresa.com" editable={isAdmin} />
-            <Input style={{ flex: 1 }} label="E-mail que recebe alertas" value={smtp.alert_email} onChangeText={(v) => setSmtp({ ...smtp, alert_email: v })} autoCapitalize="none" editable={isAdmin} testID="alert-email" />
+            <Input style={{ flex: 1 }} label="Remetente" value={smtp.smtp_from} onChangeText={(v) => setSmtp({ ...smtp, smtp_from: v })} autoCapitalize="none" placeholder="alertas@empresa.com" editable={canEdit} />
+            <Input style={{ flex: 1 }} label="E-mail que recebe alertas" value={smtp.alert_email} onChangeText={(v) => setSmtp({ ...smtp, alert_email: v })} autoCapitalize="none" editable={canEdit} testID="alert-email" />
           </Row>
           <Row>
             <Text style={[styles.value, { flex: 1 }]}>Alertas ativos</Text>
-            <Switch value={smtp.alerts_enabled} onValueChange={(v) => setSmtp({ ...smtp, alerts_enabled: v })} disabled={!isAdmin} trackColor={{ true: colors.brandPrimary, false: colors.surfaceTertiary }} testID="alerts-toggle" />
+            <Switch value={smtp.alerts_enabled} onValueChange={(v) => setSmtp({ ...smtp, alerts_enabled: v })} disabled={!canEdit} trackColor={{ true: colors.brandPrimary, false: colors.surfaceTertiary }} testID="alerts-toggle" />
           </Row>
-          {isAdmin ? (
+          {canEdit ? (
             <Row gap={8}>
               <Button small title="Salvar e-mail" icon="save-outline" onPress={save} loading={saveSettings.isPending} testID="smtp-save" />
               <Button

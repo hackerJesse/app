@@ -49,6 +49,12 @@ Idioma do usuário: pt-BR. Tema escuro (paleta atual laranja/preto → será tro
 - **Excluir assinante**: DELETE /admin/subscribers/{id} (remove conta, operador vinculado e sessões) — ícone lixeira em Admin › Assinantes
 - Login: banner Zatriz padrão (assets/images/zatriz-banner.png; imagem customizada em Configurações substitui), formulário mais alto, KeyboardAvoidingView "height" no Android; splash com o banner Zatriz (fundo #0A0A0B)
 
+## Implementado (fase 7)
+- Identidade Zatriz: tema verde (#2BE36F dark / #17A74A light), ícone/adaptive-icon/favicon com o "Z" do banner, splash com banner; login centralizado verticalmente
+- Configurações por papel: assinante (não-admin) vê aparência, idioma, segurança, logo/nome da empresa (só relatórios), alertas por e-mail (SMTP) e usuário operador — e pode salvar (PUT /settings ignora tutorial_*/login_image_path para não-admin; operador 403). Admin vê também links de tutorial, imagem de login e latência.
+- Relatórios (`/reports`, menu "Relatórios"): Ativos e manutenções (filtros cliente, tipo, período de cadastro, período das manutenções; KPIs, totais por tipo/status, tabela de ativos e manutenções) e Servidores (resumo ou completo com configs/métricas). Imprimir ou PDF. `src/reports.ts`
+- Planta baixa: botões Imprimir/PDF (`src/floorplan-pdf.ts`) com planta (imagem ou desenho), marcadores, tabela de pontos e topologias de rede do mesmo cliente (`topologySection` em `src/topology.ts`)
+
 ## Backlog (ordem acordada com o usuário)
 - Traduzir telas internas (formulários, sheets) para en/es
 - Testes automatizados finais (usuário fará manualmente)

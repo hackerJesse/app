@@ -1127,11 +1127,17 @@ async def get_settings(user: dict = Depends(get_current_user)):
     return doc
 
 
+ADMIN_ONLY_SETTINGS = ("tutorial_pdf_url", "tutorial_video_url", "login_image_path")
+
+
 @api_router.put("/settings")
 async def put_settings(body: SettingsModel, user: dict = Depends(get_current_user)):
-    if user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Somente administradores podem alterar as configurações")
+    if user.get("role") == "operator":
+        raise HTTPException(status_code=403, detail="Operadores não podem alterar as configurações")
     doc = body.model_dump()
+    if user.get("role") != "admin":
+        for k in ADMIN_ONLY_SETTINGS:
+            doc.pop(k, None)
     await db.settings.update_one({"owner_id": user["user_id"]}, {"$set": doc}, upsert=True)
     return await get_settings(user)
 

@@ -126,7 +126,7 @@ export function quoteHtml(q: Quote, client?: Client) {
   const total = quoteTotal(q);
   return `<html><head><meta charset="utf-8"/><style>
   body{font-family:Helvetica,Arial,sans-serif;color:#111;padding:28px;font-size:13px}
-  .top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1E6FE8;padding-bottom:12px;margin-bottom:16px}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #17A74A;padding-bottom:12px;margin-bottom:16px}
   .brand{font-size:20px;font-weight:bold;letter-spacing:1px}
   .meta{text-align:right;font-size:12px;color:#444}
   h2{font-size:16px;margin:16px 0 6px;color:#333;text-transform:uppercase;letter-spacing:1px}
@@ -137,7 +137,7 @@ export function quoteHtml(q: Quote, client?: Client) {
   td.r,th.r{text-align:right}.d{color:#666;font-size:11px}
   .totals{margin-top:12px;margin-left:auto;width:260px}.totals td{border:none;padding:3px 8px}
   .totals tr.total td{font-size:16px;font-weight:bold;border-top:2px solid #111}
-  .status{display:inline-block;padding:3px 8px;border:1px solid #1E6FE8;color:#124FB0;border-radius:3px;font-size:11px;font-weight:bold;text-transform:uppercase}
+  .status{display:inline-block;padding:3px 8px;border:1px solid #17A74A;color:#0F6B32;border-radius:3px;font-size:11px;font-weight:bold;text-transform:uppercase}
   .notes{white-space:pre-wrap;color:#333}
   .foot{margin-top:40px;color:#888;font-size:10px;text-align:center}
   </style></head><body>

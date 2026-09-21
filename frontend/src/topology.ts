@@ -104,7 +104,7 @@ export function autoGenerate(cfg: AutoConfig): { nodes: TopoNode[]; links: TopoL
   return { nodes, links };
 }
 
-export function topologyHtml(t: { name: string; client_name?: string; nodes: TopoNode[]; links: TopoLink[] }) {
+export function topologySection(t: { nodes: TopoNode[]; links: TopoLink[] }) {
   const xs = t.nodes.map((n) => n.x);
   const ys = t.nodes.map((n) => n.y);
   const minX = Math.min(...xs, 0) - 80;
@@ -136,16 +136,22 @@ export function topologyHtml(t: { name: string; client_name?: string; nodes: Top
   const rows = t.nodes
     .map((n) => `<tr><td>${n.label}</td><td>${NODE_KIND_MAP[n.kind]?.label ?? n.kind}</td><td>${n.ip ?? ""}</td><td>${n.ports ?? ""}</td><td>${n.room ?? ""}</td></tr>`)
     .join("");
-  return `<html><head><meta charset="utf-8"/><style>
+  return `<svg viewBox="${minX} ${minY} ${maxX - minX} ${maxY - minY}" xmlns="http://www.w3.org/2000/svg">${lines}${nodes}</svg>
+  <table><tr><th>Dispositivo</th><th>Tipo</th><th>IP</th><th>Portas</th><th>Local</th></tr>${rows}</table>`;
+}
+
+export const TOPOLOGY_CSS = `
   body{font-family:Helvetica,Arial,sans-serif;color:#111;padding:24px}
   h1{margin:0 0 4px;font-size:22px}.sub{color:#666;font-size:12px;margin-bottom:12px}
+  h2{font-size:15px;margin:20px 0 8px;color:#333;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #17A74A;padding-bottom:4px}
   svg{border:1px solid #ccc;width:100%;height:auto;max-height:560px}
   table{border-collapse:collapse;width:100%;margin-top:16px;font-size:12px}
-  th,td{border:1px solid #ccc;padding:4px 8px;text-align:left}th{background:#eee}
-  </style></head><body>
+  th,td{border:1px solid #ccc;padding:4px 8px;text-align:left}th{background:#eee}`;
+
+export function topologyHtml(t: { name: string; client_name?: string; nodes: TopoNode[]; links: TopoLink[] }) {
+  return `<html><head><meta charset="utf-8"/><style>${TOPOLOGY_CSS}</style></head><body>
   ${docHeaderHtml()}
   <h1>${t.name}</h1><div class="sub">${t.client_name ? `Cliente: ${t.client_name} · ` : ""}${t.nodes.length} dispositivos · ${t.links.length} conexões</div>
-  <svg viewBox="${minX} ${minY} ${maxX - minX} ${maxY - minY}" xmlns="http://www.w3.org/2000/svg">${lines}${nodes}</svg>
-  <table><tr><th>Dispositivo</th><th>Tipo</th><th>IP</th><th>Portas</th><th>Local</th></tr>${rows}</table>
+  ${topologySection(t)}
   <p style="color:#999;font-size:10px;margin-top:24px">${currentCompany()}</p></body></html>`;
 }

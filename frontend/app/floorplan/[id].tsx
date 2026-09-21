@@ -8,6 +8,9 @@ import Svg, { Defs, Path, Pattern, Rect, Text as SvgText } from "react-native-sv
 import { fileUrl, uploadImage } from "@/src/api";
 import { Button, Card, Header, Icon, IconButton, Input, Row, Screen, Select, Sheet, StickyBar, confirmAsync, notify } from "@/src/components/ui";
 import { useItem, useList, useRemove, useSave } from "@/src/hooks";
+import { floorplanHtml } from "@/src/floorplan-pdf";
+import { printHtml, sharePdf } from "@/src/pdf";
+import { Topology } from "@/src/types";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 import { Client, FloorPlan, FloorPoint, FloorRoom, uid } from "@/src/types";
 
@@ -33,6 +36,7 @@ export default function FloorPlanScreen() {
   const isNew = id === "new";
   const { item, isLoading } = useItem<FloorPlan>("floorplans", isNew ? undefined : id);
   const clients = useList<Client>("clients");
+  const topologies = useList<Topology>("topologies");
   const save = useSave<FloorPlan>("floorplans");
   const remove = useRemove("floorplans");
 
@@ -131,6 +135,17 @@ export default function FloorPlanScreen() {
     if (!(await confirmAsync("Excluir planta", "Esta ação não pode ser desfeita."))) return;
     await remove.mutateAsync(fp.id);
     router.back();
+  };
+
+  const exportPdf = async (share: boolean) => {
+    try {
+      const topos = (topologies.data ?? []).filter((t) => fp.client_id && t.client_id === fp.client_id);
+      const html = floorplanHtml(fp, topos, ratio);
+      if (share) await sharePdf(html, `${fp.name || "planta"}.pdf`);
+      else await printHtml(html);
+    } catch (e: any) {
+      notify("Falha ao gerar PDF", e?.message);
+    }
   };
 
   const roomAt = (p: FloorPoint) => fp.rooms.find((r) => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h)?.label;
@@ -256,6 +271,8 @@ export default function FloorPlanScreen() {
 
       <StickyBar>
         <Button title={dirty || isNew ? "Salvar" : "Salvo"} icon="save-outline" onPress={doSave} loading={save.isPending} disabled={!dirty && !isNew} style={{ flex: 1 }} testID="fp-save" />
+        <Button title="Imprimir" icon="print-outline" variant="secondary" onPress={() => exportPdf(false)} testID="fp-print" />
+        <Button title="PDF" icon="download-outline" variant="secondary" onPress={() => exportPdf(true)} testID="fp-pdf" />
       </StickyBar>
 
       <Sheet visible={settings} onClose={() => setSettings(false)} title="Planta baixa" footer={<Button title="Aplicar" onPress={() => (fp.name.trim() ? setSettings(false) : notify("Informe o nome"))} testID="fp-settings-apply" />}>

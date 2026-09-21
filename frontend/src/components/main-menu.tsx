@@ -21,6 +21,7 @@ const ITEMS: { label: TKey; hint: TKey; icon: IconName; href: string; testID: st
   { label: "clients", hint: "hint_clients", icon: "people-outline", href: "/clients", testID: "menu-clients" },
   { label: "infra", hint: "hint_infra", icon: "server-outline", href: "/(tabs)/infra", testID: "menu-infra" },
   { label: "servers", hint: "hint_servers", icon: "map-outline", href: "/(tabs)/map", testID: "menu-map" },
+  { label: "reports", hint: "hint_reports", icon: "bar-chart-outline", href: "/reports", testID: "menu-reports" },
   { label: "settings", hint: "hint_settings", icon: "settings-outline", href: "/settings", testID: "menu-settings" },
   { label: "subscribers", hint: "hint_subscribers", icon: "card-outline", href: "/admin/subscribers", testID: "menu-subscribers", admin: true },
 ];
@@ -39,7 +40,7 @@ export function MainMenu({ visible, onClose }: { visible: boolean; onClose: () =
   };
 
   return (
-    <Sheet visible={visible} onClose={onClose} title={settings.data?.company_name || "N-Security InfraManager"}>
+    <Sheet visible={visible} onClose={onClose} title={settings.data?.company_name || "Zatriz"}>
       <View style={styles.profile}>
         {settings.data?.logo_data_url ? (
           <Image source={{ uri: settings.data.logo_data_url }} style={styles.logo} contentFit="contain" />

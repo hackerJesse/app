@@ -61,6 +61,7 @@ export default function LoginScreen() {
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={[styles.content, { paddingTop: custom ? insets.top + 24 : insets.top, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
           {!custom ? <Image source={HERO} style={styles.banner} contentFit="cover" transition={300} testID="login-banner" /> : null}
+          <View style={{ height: 8 }} />
           {branding.data?.logo_data_url ? (
             <Image source={{ uri: branding.data.logo_data_url }} style={styles.logo} contentFit="contain" />
           ) : custom || (branding.data?.company_name && branding.data.company_name.trim().toUpperCase() !== "ZATRIZ") ? (
@@ -121,7 +122,7 @@ const useStyles = makeStyles((c) => ({
   hero: { position: "absolute", top: 0, left: 0, right: 0, height: "38%" },
   banner: { width: "100%", aspectRatio: 3.2, borderRadius: 6, marginTop: 16, marginBottom: 12, backgroundColor: "#0A0A0B" },
   scrim: { position: "absolute", top: 0, left: 0, right: 0, height: "42%" },
-  content: { flexGrow: 1, paddingHorizontal: 20 },
+  content: { flexGrow: 1, paddingHorizontal: 20, justifyContent: "center" },
   brand: { color: c.onSurface, fontFamily: fonts.display, fontSize: 36, letterSpacing: 2, marginTop: 24 },
   logo: { width: "100%", height: 80, alignSelf: "center", marginBottom: 8, marginTop: 16 },
   tag: { color: c.muted, fontFamily: fonts.displayMedium, fontSize: 12, letterSpacing: 3, marginBottom: 20 },
