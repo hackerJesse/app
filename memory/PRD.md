@@ -47,7 +47,7 @@ Idioma do usuário: pt-BR. Tema escuro (paleta atual laranja/preto → será tro
 - **Foto do dispositivo**: upload nativo via `expo-file-system/legacy` `uploadAsync` (fetch+FormData falhava no Android)
 - **Redefinir senha**: `/forgot` (login → "Esqueci minha senha") → POST /auth/forgot-password (código 6 dígitos por e-mail via SMTP configurado, 15 min, 5 tentativas, rate-limit) → POST /auth/reset-password (troca senha e derruba sessões). Exige SMTP configurado pelo admin.
 - **Excluir assinante**: DELETE /admin/subscribers/{id} (remove conta, operador vinculado e sessões) — ícone lixeira em Admin › Assinantes
-- Login: formulário mais alto (hero 38%), KeyboardAvoidingView "height" no Android
+- Login: banner Zatriz padrão (assets/images/zatriz-banner.png; imagem customizada em Configurações substitui), formulário mais alto, KeyboardAvoidingView "height" no Android; splash com o banner Zatriz (fundo #0A0A0B)
 
 ## Backlog (ordem acordada com o usuário)
 - Traduzir telas internas (formulários, sheets) para en/es
