@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, LogBox, Text, View } from "react-native";
+import { ActivityIndicator, LogBox, View } from "react-native";
+import { Image } from "expo-image";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -15,16 +16,14 @@ import { loadThemePreference, makeStyles, useTheme } from "@/src/theme";
 
 LogBox.ignoreAllLogs(true);
 
+const SPLASH_BG = "#0A0A0B"; // mesmo fundo do banner Zatriz (igual no tema claro e escuro)
+
 function Splash() {
   const styles = useStyles();
-  const { colors } = useTheme();
   return (
     <View style={styles.splash}>
-      <Text style={styles.splashTitle}>
-        N-<Text style={{ color: colors.brandPrimary }}>SECURITY</Text>
-      </Text>
-      <Text style={styles.splashSub}>INFRAMANAGER</Text>
-      <ActivityIndicator color={colors.brandPrimary} style={{ marginTop: 24 }} />
+      <Image source={require("../assets/images/zatriz-banner.png")} style={styles.splashLogo} contentFit="contain" testID="splash-logo" />
+      <ActivityIndicator color="#2BE36F" style={{ marginTop: 24 }} />
     </View>
   );
 }
@@ -78,7 +77,6 @@ export default function RootLayout() {
 }
 
 const useStyles = makeStyles((c) => ({
-  splash: { flex: 1, backgroundColor: c.surface, alignItems: "center", justifyContent: "center" },
-  splashTitle: { color: c.onSurface, fontSize: 36, fontWeight: "800", letterSpacing: 2 },
-  splashSub: { color: c.muted, fontSize: 14, fontWeight: "600", letterSpacing: 4 },
+  splash: { flex: 1, backgroundColor: SPLASH_BG, alignItems: "center", justifyContent: "center" },
+  splashLogo: { width: "100%", aspectRatio: 3.2 },
 }));

@@ -13,7 +13,8 @@ import { useT } from "@/src/i18n";
 import { Button, Input } from "@/src/components/ui";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 
-const HERO = require("../assets/images/zatriz-banner.png");
+const HERO =
+  "https://images.unsplash.com/photo-1695668548342-c0c1ad479aee?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200";
 
 export default function LoginScreen() {
   const styles = useStyles();
@@ -31,8 +32,6 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const branding = useQuery<{ company_name: string; logo_data_url: string; login_image_url: string }>({ queryKey: ["branding"], queryFn: () => api("/branding", { auth: false }), staleTime: 300000 });
-
-  const custom = !!branding.data?.login_image_url;
 
   const submit = async () => {
     if (!email.trim() || !password) {
@@ -52,21 +51,15 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.root}>
-      {custom ? (
-        <>
-          <Image source={{ uri: branding.data!.login_image_url }} style={styles.hero} contentFit="cover" transition={300} />
-          <LinearGradient colors={["transparent", colors.surface, colors.surface]} locations={[0, 0.55, 1]} style={styles.scrim} />
-        </>
-      ) : null}
+      <Image source={{ uri: branding.data?.login_image_url || HERO }} style={styles.hero} contentFit="cover" transition={300} />
+      <LinearGradient colors={["transparent", colors.surface, colors.surface]} locations={[0, 0.55, 1]} style={styles.scrim} />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={[styles.content, { paddingTop: custom ? insets.top + 24 : insets.top, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
-          {!custom ? <Image source={HERO} style={styles.banner} contentFit="cover" transition={300} testID="login-banner" /> : null}
-          <View style={{ height: 8 }} />
+        <ScrollView contentContainerStyle={[styles.content, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
           {branding.data?.logo_data_url ? (
             <Image source={{ uri: branding.data.logo_data_url }} style={styles.logo} contentFit="contain" />
-          ) : custom || (branding.data?.company_name && branding.data.company_name.trim().toUpperCase() !== "ZATRIZ") ? (
+          ) : (
             <Text style={[styles.brand, { textAlign: "center" }]}>{branding.data?.company_name || "ZATRIZ"}</Text>
-          ) : null}
+          )}
           <Text style={[styles.tag, { textAlign: "center" }]}>{t("restricted")}</Text>
 
           <View style={styles.form}>
@@ -119,9 +112,8 @@ export default function LoginScreen() {
 
 const useStyles = makeStyles((c) => ({
   root: { flex: 1, backgroundColor: c.surface },
-  hero: { position: "absolute", top: 0, left: 0, right: 0, height: "38%" },
-  banner: { width: "100%", aspectRatio: 3.2, borderRadius: 6, marginTop: 16, marginBottom: 12, backgroundColor: "#0A0A0B" },
-  scrim: { position: "absolute", top: 0, left: 0, right: 0, height: "42%" },
+  hero: { position: "absolute", top: 0, left: 0, right: 0, height: "45%" },
+  scrim: { position: "absolute", top: 0, left: 0, right: 0, height: "50%" },
   content: { flexGrow: 1, paddingHorizontal: 20, justifyContent: "center" },
   brand: { color: c.onSurface, fontFamily: fonts.display, fontSize: 36, letterSpacing: 2, marginTop: 24 },
   logo: { width: "100%", height: 80, alignSelf: "center", marginBottom: 8, marginTop: 16 },
