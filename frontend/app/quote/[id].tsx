@@ -7,6 +7,7 @@ import { useItem, useList, useRemove, useSave } from "@/src/hooks";
 import { canSharePdf, printHtml, quoteHtml, sharePdf } from "@/src/pdf";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 import { Client, QUOTE_STATUS, Quote, QuoteItem, STATUS_TONE, fmtBRL, quoteSubtotal, quoteTotal } from "@/src/types";
+import { tr } from "@/src/i18n";
 
 const EMPTY: Quote = { id: "", kind: "venda", status: "rascunho", items: [], discount: 0, tax: 0, notes: "", valid_until: "", client_id: "", client_name: "" };
 
@@ -50,7 +51,7 @@ export default function QuoteEditor() {
 
   const doSave = async () => {
     if (!current.client_id && !current.client_name) {
-      notify("Selecione um cliente");
+      notify(tr("Selecione um cliente"));
       return;
     }
     try {
@@ -59,14 +60,14 @@ export default function QuoteEditor() {
       const saved = await save.mutateAsync(body);
       setDirty(false);
       if (isNew) router.replace(`/quote/${saved.id}`);
-      else notify("Orçamento salvo");
+      else notify(tr("Orçamento salvo"));
     } catch (e: any) {
-      notify("Erro ao salvar", e?.message);
+      notify(tr("Erro ao salvar"), e?.message);
     }
   };
 
   const doDelete = async () => {
-    if (!(await confirmAsync("Excluir orçamento", "Esta ação não pode ser desfeita."))) return;
+    if (!(await confirmAsync(tr("Excluir orçamento"), tr("Esta ação não pode ser desfeita.")))) return;
     await remove.mutateAsync(q.id);
     router.back();
   };
@@ -77,14 +78,14 @@ export default function QuoteEditor() {
       if (share) await sharePdf(html, `${current.number || "orcamento"}.pdf`);
       else await printHtml(html);
     } catch (e: any) {
-      notify("Falha ao gerar PDF", e?.message);
+      notify(tr("Falha ao gerar PDF"), e?.message);
     }
   };
 
   const saveItem = () => {
     if (!itemSheet) return;
     if (!itemSheet.item.description.trim()) {
-      notify("Informe a descrição do item");
+      notify(tr("Informe a descrição do item"));
       return;
     }
     const items = [...q.items];
@@ -96,7 +97,7 @@ export default function QuoteEditor() {
 
   const removeItem = (idx: number) => patch({ items: q.items.filter((_, i) => i !== idx) });
 
-  if (!isNew && isLoading) return <Screen><Header title="Orçamento" back /></Screen>;
+  if (!isNew && isLoading) return <Screen><Header title={tr("Orçamento")} back /></Screen>;
 
   return (
     <Screen>
@@ -110,21 +111,21 @@ export default function QuoteEditor() {
         <ScrollView contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
           <Row gap={8} style={{ flexWrap: "wrap" }}>
             <Badge text={q.status} tone={STATUS_TONE[q.status]} />
-            <Badge text={q.kind === "servico" ? "Serviço" : "Venda"} tone="brand" />
+            <Badge text={q.kind === "servico" ? tr("Serviço") : tr("Venda")} tone="brand" />
           </Row>
           <Select
             testID="quote-client"
-            label="Cliente"
+            label={tr("Cliente")}
             value={q.client_id ?? ""}
             options={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name, hint: c.company }))}
             onChange={(v) => patch({ client_id: v, client_name: clients.data?.find((c) => c.id === v)?.name ?? "" })}
-            placeholder={clients.data?.length ? "Selecionar cliente" : "Cadastre um cliente primeiro"}
+            placeholder={clients.data?.length ? tr("Selecionar cliente") : tr("Cadastre um cliente primeiro")}
           />
           <Row gap={8}>
             <View style={{ flex: 1 }}>
               <Select
                 testID="quote-kind"
-                label="Tipo"
+                label={tr("Tipo")}
                 value={q.kind}
                 options={[
                   { value: "venda", label: "Venda" },
@@ -134,17 +135,17 @@ export default function QuoteEditor() {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Select testID="quote-status" label="Status" value={q.status} options={QUOTE_STATUS} onChange={(v) => patch({ status: v })} />
+              <Select testID="quote-status" label={tr("Status")} value={q.status} options={QUOTE_STATUS} onChange={(v) => patch({ status: v })} />
             </View>
           </Row>
-          <Input label="Validade" value={q.valid_until} onChangeText={(v) => patch({ valid_until: v })} placeholder="dd/mm/aaaa" testID="quote-valid" />
+          <Input label={tr("Validade")} value={q.valid_until} onChangeText={(v) => patch({ valid_until: v })} placeholder={tr("dd/mm/aaaa")} testID="quote-valid" />
 
           <SectionTitle
             title={`Itens (${q.items.length})`}
             right={
               <Button
                 small
-                title="Adicionar"
+                title={tr("Adicionar")}
                 icon="add"
                 variant="ghost"
                 testID="quote-add-item"
@@ -152,7 +153,7 @@ export default function QuoteEditor() {
               />
             }
           />
-          {q.items.length === 0 ? <Text style={styles.hint}>Nenhum item. Adicione produtos ou serviços.</Text> : null}
+          {q.items.length === 0 ? <Text style={styles.hint}>{tr("Nenhum item. Adicione produtos ou serviços.")}</Text> : null}
           {q.items.map((it, idx) => (
             <Card key={idx} onPress={() => setItemSheet({ index: idx, item: { ...it } })} testID={`quote-item-${idx}`}>
               <Row>
@@ -170,30 +171,30 @@ export default function QuoteEditor() {
           ))}
 
           <Row gap={8}>
-            <Input style={{ flex: 1 }} label="Desconto (R$)" value={discount} onChangeText={(v) => { setDiscount(v); setDirty(true); }} keyboardType="decimal-pad" testID="quote-discount" />
-            <Input style={{ flex: 1 }} label="Impostos (R$)" value={tax} onChangeText={(v) => { setTax(v); setDirty(true); }} keyboardType="decimal-pad" testID="quote-tax" />
+            <Input style={{ flex: 1 }} label={tr("Desconto (R$)")} value={discount} onChangeText={(v) => { setDiscount(v); setDirty(true); }} keyboardType="decimal-pad" testID="quote-discount" />
+            <Input style={{ flex: 1 }} label={tr("Impostos (R$)")} value={tax} onChangeText={(v) => { setTax(v); setDirty(true); }} keyboardType="decimal-pad" testID="quote-tax" />
           </Row>
-          <Input label="Observações" value={q.notes} onChangeText={(v) => patch({ notes: v })} multiline placeholder="Condições de pagamento, prazo de entrega, garantia..." />
+          <Input label={tr("Observações")} value={q.notes} onChangeText={(v) => patch({ notes: v })} multiline placeholder={tr("Condições de pagamento, prazo de entrega, garantia...")} />
 
           <Card style={{ gap: 4 }}>
             <Row>
-              <Text style={styles.totLabel}>Subtotal</Text>
+              <Text style={styles.totLabel}>{tr("Subtotal")}</Text>
               <View style={{ flex: 1 }} />
               <Text style={styles.totValue}>{fmtBRL(quoteSubtotal(current))}</Text>
             </Row>
             <Row>
-              <Text style={styles.totLabel}>Desconto</Text>
+              <Text style={styles.totLabel}>{tr("Desconto")}</Text>
               <View style={{ flex: 1 }} />
               <Text style={styles.totValue}>- {fmtBRL(current.discount)}</Text>
             </Row>
             <Row>
-              <Text style={styles.totLabel}>Impostos</Text>
+              <Text style={styles.totLabel}>{tr("Impostos")}</Text>
               <View style={{ flex: 1 }} />
               <Text style={styles.totValue}>{fmtBRL(current.tax)}</Text>
             </Row>
             <View style={styles.divider} />
             <Row>
-              <Text style={styles.grandLabel}>TOTAL</Text>
+              <Text style={styles.grandLabel}>{tr("TOTAL")}</Text>
               <View style={{ flex: 1 }} />
               <Text style={styles.grand} testID="quote-total">{fmtBRL(quoteTotal(current))}</Text>
             </Row>
@@ -202,30 +203,30 @@ export default function QuoteEditor() {
       </KeyboardAvoidingView>
 
       <StickyBar>
-        <Button title={dirty || isNew ? "Salvar" : "Salvo"} icon="save-outline" onPress={doSave} loading={save.isPending} style={{ flex: 1 }} testID="quote-save" disabled={!dirty && !isNew} />
-        <Button title="Imprimir" icon="print-outline" variant="secondary" onPress={() => exportPdf(false)} testID="quote-print" />
-        {canSharePdf ? <Button title="PDF" icon="share-outline" variant="secondary" onPress={() => exportPdf(true)} testID="quote-share" /> : null}
+        <Button title={dirty || isNew ? tr("Salvar") : tr("Salvo")} icon="save-outline" onPress={doSave} loading={save.isPending} style={{ flex: 1 }} testID="quote-save" disabled={!dirty && !isNew} />
+        <Button title={tr("Imprimir")} icon="print-outline" variant="secondary" onPress={() => exportPdf(false)} testID="quote-print" />
+        {canSharePdf ? <Button title={tr("PDF")} icon="share-outline" variant="secondary" onPress={() => exportPdf(true)} testID="quote-share" /> : null}
       </StickyBar>
 
       <Sheet
         visible={!!itemSheet}
         onClose={() => setItemSheet(null)}
-        title={itemSheet?.index === -1 ? "Novo item" : "Editar item"}
-        footer={<Button title="Confirmar item" onPress={saveItem} testID="item-confirm" />}
+        title={itemSheet?.index === -1 ? tr("Novo item") : tr("Editar item")}
+        footer={<Button title={tr("Confirmar item")} onPress={saveItem} testID="item-confirm" />}
       >
         {itemSheet ? (
           <>
             <Input
-              label="Descrição"
+              label={tr("Descrição")}
               value={itemSheet.item.description}
               onChangeText={(v) => setItemSheet({ ...itemSheet, item: { ...itemSheet.item, description: v } })}
-              placeholder="Switch 48 portas PoE / Instalação de rack"
+              placeholder={tr("Switch 48 portas PoE / Instalação de rack")}
               testID="item-description"
             />
             <Row gap={8}>
               <Input
                 style={{ flex: 1 }}
-                label="Quantidade"
+                label={tr("Quantidade")}
                 value={String(itemSheet.item.quantity)}
                 onChangeText={(v) => setItemSheet({ ...itemSheet, item: { ...itemSheet.item, quantity: num(v) } })}
                 keyboardType="decimal-pad"
@@ -233,7 +234,7 @@ export default function QuoteEditor() {
               />
               <Input
                 style={{ flex: 1 }}
-                label="Valor unitário (R$)"
+                label={tr("Valor unitário (R$)")}
                 value={String(itemSheet.item.unit_price)}
                 onChangeText={(v) => setItemSheet({ ...itemSheet, item: { ...itemSheet.item, unit_price: num(v) } })}
                 keyboardType="decimal-pad"
@@ -241,10 +242,10 @@ export default function QuoteEditor() {
               />
             </Row>
             <Input
-              label="Detalhes (opcional)"
+              label={tr("Detalhes (opcional)")}
               value={itemSheet.item.detail}
               onChangeText={(v) => setItemSheet({ ...itemSheet, item: { ...itemSheet.item, detail: v } })}
-              placeholder="Marca, modelo, garantia..."
+              placeholder={tr("Marca, modelo, garantia...")}
             />
             <Pressable>
               <Text style={styles.hint}>Total do item: {fmtBRL(itemSheet.item.quantity * itemSheet.item.unit_price)}</Text>

@@ -8,7 +8,7 @@ import { Badge, Button, Card, Empty, Fab, Header, Icon, IconButton, Input, Loadi
 import { DEVICE_KINDS, DEVICE_KIND_MAP, Device, preventiveBadge, specSummary } from "@/src/devices";
 import { useList } from "@/src/hooks";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
-import { useT } from "@/src/i18n";
+import { useT, tr } from "@/src/i18n";
 
 type Filter = "todos" | "vencida" | "proxima" | string;
 
@@ -46,7 +46,7 @@ export default function DevicesScreen() {
         right={<IconButton name="qr-code-outline" onPress={() => router.push("/scan")} testID="scan-button" color={colors.brandPrimary} />}
       />
       <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
-        <Input value={search} onChangeText={setSearch} placeholder="Buscar por setor, patrimônio, série, nome..." testID="device-search" autoCapitalize="none" />
+        <Input value={search} onChangeText={setSearch} placeholder={tr("Buscar por setor, patrimônio, série, nome...")} testID="device-search" autoCapitalize="none" />
       </View>
       <Segmented
         options={[
@@ -70,9 +70,9 @@ export default function DevicesScreen() {
           ListEmptyComponent={
             <Empty
               icon="hardware-chip-outline"
-              title={search || filter !== "todos" ? "Nenhum resultado" : "Nenhum dispositivo"}
-              hint="Cadastre computadores, notebooks, servidores, impressoras e gere etiquetas com QR Code."
-              action={<Button title="Novo dispositivo" onPress={() => router.push("/device/form")} testID="empty-new-device" />}
+              title={search || filter !== "todos" ? tr("Nenhum resultado") : tr("Nenhum dispositivo")}
+              hint={tr("Cadastre computadores, notebooks, servidores, impressoras e gere etiquetas com QR Code.")}
+              action={<Button title={tr("Novo dispositivo")} onPress={() => router.push("/device/form")} testID="empty-new-device" />}
             />
           }
           renderItem={({ item: d }) => {
@@ -96,7 +96,7 @@ export default function DevicesScreen() {
                       {d.asset_tag ? <Text style={styles.tag}>#{d.asset_tag}</Text> : null}
                     </Row>
                     <Text style={styles.meta} numberOfLines={1}>
-                      {kind.label}
+                      {tr(kind.label)}
                       {d.sector ? ` · ${d.sector}` : ""}
                       {d.client_name ? ` · ${d.client_name}` : ""}
                     </Text>

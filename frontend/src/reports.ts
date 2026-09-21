@@ -1,3 +1,4 @@
+import { tr } from "@/src/i18n";
 import { currentCompany, docHeaderHtml } from "@/src/brand";
 import { DEVICE_KIND_MAP, DEVICE_STATUS, Device, Maintenance, specSummary } from "@/src/devices";
 import { Server, fmtBRL, fmtDate } from "@/src/types";
@@ -48,8 +49,8 @@ const CSS = `
 `;
 
 function periodLabel(p: Period) {
-  if (!p.from && !p.to) return "todo o período";
-  return `${p.from || "início"} até ${p.to || "hoje"}`;
+  if (!p.from && !p.to) return tr("todo o período");
+  return `${p.from || tr("início")} ${tr("até")} ${p.to || tr("hoje")}`;
 }
 
 export type DevicesReportInput = {
@@ -79,67 +80,67 @@ export function devicesReportHtml(inp: DevicesReportInput) {
   const rows = devs
     .map(
       (d) => `<tr><td><b>${d.name}</b><br/><span class="muted">${specSummary(d) || ""}</span></td><td>${d.asset_tag || "—"}<br/><span class="muted">${d.serial || ""}</span></td>
-      <td>${DEVICE_KIND_MAP[d.kind]?.label ?? d.kind}</td><td>${d.sector || "—"}<br/><span class="muted">${d.client_name || ""}</span></td><td>${STATUS_LABEL[d.status] ?? d.status}</td>
-      <td>${fmtDate(d.created_at)}</td><td>${d.last_preventive ? fmtDate(d.last_preventive) : "—"}<br/><span class="muted">${d.next_preventive ? `próx. ${fmtDate(d.next_preventive)}` : ""}</span></td><td class="r">${(byDevice.get(d.id) ?? []).length}</td></tr>`,
+      <td>${tr(DEVICE_KIND_MAP[d.kind]?.label ?? d.kind)}</td><td>${d.sector || "—"}<br/><span class="muted">${d.client_name || ""}</span></td><td>${tr(STATUS_LABEL[d.status] ?? d.status)}</td>
+      <td>${fmtDate(d.created_at)}</td><td>${d.last_preventive ? fmtDate(d.last_preventive) : "—"}<br/><span class="muted">${d.next_preventive ? `${tr("próx.")} ${fmtDate(d.next_preventive)}` : ""}</span></td><td class="r">${(byDevice.get(d.id) ?? []).length}</td></tr>`,
     )
     .join("");
   const names = new Map(devs.map((d) => [d.id, d.name]));
   const mrows = maint
     .slice()
     .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .map((m) => `<tr><td>${fmtDate(m.date)}</td><td>${names.get(m.device_id) ?? m.device_id}</td><td>${m.kind === "preventiva" ? "Preventiva" : "Corretiva"}</td><td>${m.description || ""}${m.parts ? `<br/><span class="muted">Peças: ${m.parts}</span>` : ""}</td><td>${m.technician || ""}</td><td class="r">${fmtBRL(Number(m.cost) || 0)}</td></tr>`)
+    .map((m) => `<tr><td>${fmtDate(m.date)}</td><td>${names.get(m.device_id) ?? m.device_id}</td><td>${tr(m.kind === "preventiva" ? "Preventiva" : "Corretiva")}</td><td>${m.description || ""}${m.parts ? `<br/><span class="muted">${tr("Peças")}: ${m.parts}</span>` : ""}</td><td>${m.technician || ""}</td><td class="r">${fmtBRL(Number(m.cost) || 0)}</td></tr>`)
     .join("");
 
   return `<html><head><meta charset="utf-8"/><style>${CSS}</style></head><body>
   ${docHeaderHtml()}
-  <h1>Relatório de ativos</h1>
-  <div class="sub">Cadastro: ${periodLabel(inp.created)} · Manutenções: ${periodLabel(inp.maint)}${inp.clientName ? ` · Cliente: ${inp.clientName}` : ""}${inp.kind ? ` · Tipo: ${DEVICE_KIND_MAP[inp.kind]?.label ?? inp.kind}` : ""} · Gerado em ${fmtDate(new Date().toISOString())}</div>
+  <h1>${tr("Relatório de ativos")}</h1>
+  <div class="sub">${tr("Cadastro")}: ${periodLabel(inp.created)} · ${tr("Manutenções")}: ${periodLabel(inp.maint)}${inp.clientName ? ` · ${tr("Cliente")}: ${inp.clientName}` : ""}${inp.kind ? ` · ${tr("Tipo")}: ${tr(DEVICE_KIND_MAP[inp.kind]?.label ?? inp.kind)}` : ""} · Gerado em ${fmtDate(new Date().toISOString())}</div>
   <div class="kpis">
-    <div class="kpi"><b>${devs.length}</b><span>Ativos</span></div>
-    <div class="kpi"><b>${maint.length}</b><span>Manutenções</span></div>
-    <div class="kpi"><b>${prev}</b><span>Preventivas</span></div>
-    <div class="kpi"><b>${corr}</b><span>Corretivas</span></div>
-    <div class="kpi"><b>${fmtBRL(cost)}</b><span>Custo total</span></div>
-    <div class="kpi"><b>${overdue}</b><span>Prev. vencidas</span></div>
-    <div class="kpi"><b>${soon}</b><span>Prev. próximas</span></div>
+    <div class="kpi"><b>${devs.length}</b><span>${tr("Ativos")}</span></div>
+    <div class="kpi"><b>${maint.length}</b><span>${tr("Manutenções")}</span></div>
+    <div class="kpi"><b>${prev}</b><span>${tr("Preventivas")}</span></div>
+    <div class="kpi"><b>${corr}</b><span>${tr("Corretivas")}</span></div>
+    <div class="kpi"><b>${fmtBRL(cost)}</b><span>${tr("Custo total")}</span></div>
+    <div class="kpi"><b>${overdue}</b><span>${tr("Prev. vencidas")}</span></div>
+    <div class="kpi"><b>${soon}</b><span>${tr("Prev. próximas")}</span></div>
   </div>
-  <h2>Totais por tipo e status</h2>
-  <table><tr><th>Tipo</th><th class="r">Qtd</th><th style="width:40px;border:none;background:none"></th><th>Status</th><th class="r">Qtd</th></tr>
+  <h2>${tr("Totais por tipo e status")}</h2>
+  <table><tr><th>${tr("Tipo")}</th><th class="r">${tr("Qtd")}</th><th style="width:40px;border:none;background:none"></th><th>${tr("Status")}</th><th class="r">${tr("Qtd")}</th></tr>
   ${Array.from({ length: Math.max(byKind.size, byStatus.size) })
     .map((_, i) => {
       const k = Array.from(byKind.entries())[i];
       const s = Array.from(byStatus.entries())[i];
-      return `<tr><td>${k ? DEVICE_KIND_MAP[k[0]]?.label ?? k[0] : ""}</td><td class="r">${k ? k[1] : ""}</td><td style="border:none"></td><td>${s ? STATUS_LABEL[s[0]] ?? s[0] : ""}</td><td class="r">${s ? s[1] : ""}</td></tr>`;
+      return `<tr><td>${k ? tr(DEVICE_KIND_MAP[k[0]]?.label ?? k[0]) : ""}</td><td class="r">${k ? k[1] : ""}</td><td style="border:none"></td><td>${s ? tr(STATUS_LABEL[s[0]] ?? s[0]) : ""}</td><td class="r">${s ? s[1] : ""}</td></tr>`;
     })
     .join("")}</table>
   <h2>Ativos (${devs.length})</h2>
-  <table><tr><th>Dispositivo</th><th>Patrimônio / Série</th><th>Tipo</th><th>Setor / Cliente</th><th>Status</th><th>Cadastro</th><th>Preventiva</th><th class="r">Manut.</th></tr>
-  ${rows || `<tr><td colspan="8" class="muted">Nenhum ativo no filtro</td></tr>`}</table>
+  <table><tr><th>${tr("Dispositivo")}</th><th>${tr("Patrimônio / Série")}</th><th>${tr("Tipo")}</th><th>${tr("Setor / Cliente")}</th><th>${tr("Status")}</th><th>${tr("Cadastro")}</th><th>${tr("Preventiva")}</th><th class="r">${tr("Manut.")}</th></tr>
+  ${rows || `<tr><td colspan="8" class="muted">${tr("Nenhum ativo no filtro")}</td></tr>`}</table>
   <h2>Manutenções no período (${maint.length})</h2>
-  <table><tr><th>Data</th><th>Dispositivo</th><th>Tipo</th><th>Descrição</th><th>Técnico</th><th class="r">Custo</th></tr>
-  ${mrows || `<tr><td colspan="6" class="muted">Nenhuma manutenção no período</td></tr>`}</table>
+  <table><tr><th>${tr("Data")}</th><th>${tr("Dispositivo")}</th><th>${tr("Tipo")}</th><th>${tr("Descrição")}</th><th>${tr("Técnico")}</th><th class="r">${tr("Custo")}</th></tr>
+  ${mrows || `<tr><td colspan="6" class="muted">${tr("Nenhuma manutenção no período")}</td></tr>`}</table>
   <div class="foot">${currentCompany()} · Documento gerado eletronicamente</div>
   </body></html>`;
 }
 
 function statusHtml(s: Server) {
-  return s.status === "online" ? `<span class="ok">ONLINE${s.latency_ms != null ? ` · ${s.latency_ms} ms` : ""}</span>` : s.status === "offline" ? `<span class="off">OFFLINE</span>` : `<span class="unk">Sem verificação</span>`;
+  return s.status === "online" ? `<span class="ok">ONLINE${s.latency_ms != null ? ` · ${s.latency_ms} ms` : ""}</span>` : s.status === "offline" ? `<span class="off">OFFLINE</span>` : `<span class="unk">${tr("Sem verificação")}</span>`;
 }
 
 export function serversReportHtml(servers: Server[], mode: "resumo" | "completo", clientName?: string) {
   const online = servers.filter((s) => s.status === "online").length;
   const offline = servers.filter((s) => s.status === "offline").length;
   const head = `${docHeaderHtml()}
-  <h1>Relatório de servidores${mode === "resumo" ? " — resumo" : ""}</h1>
-  <div class="sub">${servers.length} servidor(es)${clientName ? ` · Cliente: ${clientName}` : ""} · Gerado em ${fmtDate(new Date().toISOString())}</div>
-  <div class="kpis"><div class="kpi"><b>${servers.length}</b><span>Total</span></div><div class="kpi"><b>${online}</b><span>Online</span></div><div class="kpi"><b>${offline}</b><span>Offline</span></div></div>`;
+  <h1>Relatório de servidores${mode === "resumo" ? ` — ${tr("resumo")}` : ""}</h1>
+  <div class="sub">${servers.length} ${tr("servidor(es)")}${clientName ? ` · ${tr("Cliente")}: ${clientName}` : ""} · Gerado em ${fmtDate(new Date().toISOString())}</div>
+  <div class="kpis"><div class="kpi"><b>${servers.length}</b><span>${tr("Total")}</span></div><div class="kpi"><b>${online}</b><span>${tr("Online")}</span></div><div class="kpi"><b>${offline}</b><span>${tr("Offline")}</span></div></div>`;
 
   if (mode === "resumo") {
     const rows = servers
       .map((s) => `<tr><td><b>${s.name}</b><br/><span class="muted">${s.role || ""}</span></td><td>${s.client_name || "—"}</td><td>${[s.city, s.state].filter(Boolean).join(" / ") || "—"}</td><td>${s.host}:${s.port}</td><td>${s.os || "—"}</td><td>${statusHtml(s)}</td><td>${s.last_check ? fmtDate(s.last_check) : "—"}</td></tr>`)
       .join("");
     return `<html><head><meta charset="utf-8"/><style>${CSS}</style></head><body>${head}
-    <table><tr><th>Servidor</th><th>Cliente</th><th>Cidade/UF</th><th>Endereço</th><th>S.O.</th><th>Status</th><th>Última verificação</th></tr>${rows || `<tr><td colspan="7" class="muted">Nenhum servidor</td></tr>`}</table>
+    <table><tr><th>${tr("Servidor")}</th><th>${tr("Cliente")}</th><th>${tr("Cidade/UF")}</th><th>${tr("Endereço")}</th><th>${tr("S.O.")}</th><th>${tr("Status")}</th><th>${tr("Última verificação")}</th></tr>${rows || `<tr><td colspan="7" class="muted">${tr("Nenhum servidor")}</td></tr>`}</table>
     <div class="foot">${currentCompany()} · Documento gerado eletronicamente</div></body></html>`;
   }
 
@@ -148,15 +149,15 @@ export function serversReportHtml(servers: Server[], mode: "resumo" | "completo"
       const m = s.metrics;
       return `<div class="card"><h3>${s.name} <span class="muted" style="font-weight:normal;font-size:11px">${s.role || ""}</span> · ${statusHtml(s)}</h3>
       <div class="grid">
-        <div><b>Cliente:</b> ${s.client_name || "—"}</div><div><b>Local:</b> ${[s.city, s.state].filter(Boolean).join(" / ") || "—"}</div>
-        <div><b>Endereço:</b> ${s.host}:${s.port}</div><div><b>Sistema:</b> ${s.os || m?.os || "—"}</div>
-        <div><b>CPU:</b> ${s.cpu || "—"}</div><div><b>Memória:</b> ${s.ram || "—"}</div>
-        <div><b>Disco:</b> ${s.disk || "—"}</div><div><b>Última verificação:</b> ${s.last_check ? new Date(s.last_check).toLocaleString("pt-BR") : "—"}</div>
-        ${m ? `<div><b>Uso CPU:</b> ${m.cpu ?? "—"}%</div><div><b>Uso memória:</b> ${m.mem ?? "—"}%</div><div><b>Uso disco:</b> ${m.disk ?? "—"}%</div><div><b>Uptime:</b> ${m.uptime ?? "—"}</div>` : `<div class="muted" style="grid-column:1/3">Agente de monitoramento não instalado</div>`}
-        ${s.notes ? `<div style="grid-column:1/3"><b>Observações:</b> ${s.notes}</div>` : ""}
+        <div><b>${tr("Cliente")}:</b> ${s.client_name || "—"}</div><div><b>${tr("Local")}:</b> ${[s.city, s.state].filter(Boolean).join(" / ") || "—"}</div>
+        <div><b>${tr("Endereço")}:</b> ${s.host}:${s.port}</div><div><b>${tr("Sistema")}:</b> ${s.os || m?.os || "—"}</div>
+        <div><b>CPU:</b> ${s.cpu || "—"}</div><div><b>${tr("Memória")}:</b> ${s.ram || "—"}</div>
+        <div><b>${tr("Disco")}:</b> ${s.disk || "—"}</div><div><b>${tr("Última verificação")}:</b> ${s.last_check ? new Date(s.last_check).toLocaleString("pt-BR") : "—"}</div>
+        ${m ? `<div><b>${tr("Uso CPU")}:</b> ${m.cpu ?? "—"}%</div><div><b>${tr("Uso memória")}:</b> ${m.mem ?? "—"}%</div><div><b>${tr("Uso disco")}:</b> ${m.disk ?? "—"}%</div><div><b>Uptime:</b> ${m.uptime ?? "—"}</div>` : `<div class="muted" style="grid-column:1/3">${tr("Agente de monitoramento não instalado")}</div>`}
+        ${s.notes ? `<div style="grid-column:1/3"><b>${tr("Observações")}:</b> ${s.notes}</div>` : ""}
       </div></div>`;
     })
     .join("");
-  return `<html><head><meta charset="utf-8"/><style>${CSS}</style></head><body>${head}${cards || `<p class="muted">Nenhum servidor</p>`}
+  return `<html><head><meta charset="utf-8"/><style>${CSS}</style></head><body>${head}${cards || `<p class="muted">${tr("Nenhum servidor")}</p>`}
   <div class="foot">${currentCompany()} · Documento gerado eletronicamente</div></body></html>`;
 }

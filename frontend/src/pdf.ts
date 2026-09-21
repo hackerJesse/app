@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 
+import { tr } from "@/src/i18n";
 import { currentCompany, currentLogo } from "@/src/brand";
 import type { Client, Quote } from "@/src/types";
 import { fmtBRL, quoteSubtotal, quoteTotal } from "@/src/types";
@@ -142,26 +143,26 @@ export function quoteHtml(q: Quote, client?: Client) {
   .foot{margin-top:40px;color:#888;font-size:10px;text-align:center}
   </style></head><body>
   <div class="top">
-    <div style="display:flex;align-items:center;gap:12px">${currentLogo() ? `<img src="${currentLogo()}" style="height:52px;max-width:200px;object-fit:contain"/>` : ""}<div><div class="brand">${currentCompany()}</div><div style="color:#666;font-size:11px">Orçamento comercial</div></div></div>
+    <div style="display:flex;align-items:center;gap:12px">${currentLogo() ? `<img src="${currentLogo()}" style="height:52px;max-width:200px;object-fit:contain"/>` : ""}<div><div class="brand">${currentCompany()}</div><div style="color:#666;font-size:11px">${tr("Orçamento comercial")}</div></div></div>
     <div class="meta"><div style="font-size:18px;font-weight:bold">ORÇAMENTO ${q.number ?? ""}</div>
       <div>${q.kind === "servico" ? "Prestação de serviços" : "Venda de produtos"}</div>
       <div>Emitido em ${new Date(q.created_at ?? Date.now()).toLocaleDateString("pt-BR")}</div>
       ${q.valid_until ? `<div>Válido até ${q.valid_until}</div>` : ""}
       <div style="margin-top:6px"><span class="status">${STATUS_PT[q.status] ?? q.status}</span></div></div>
   </div>
-  <h2>Cliente</h2>
+  <h2>${tr("Cliente")}</h2>
   <div class="box"><b>${client?.name ?? q.client_name ?? "—"}</b>${client?.company ? ` · ${client.company}` : ""}
-   ${client?.document ? `<br/>Documento: ${client.document}` : ""}${client?.email ? `<br/>E-mail: ${client.email}` : ""}${client?.phone ? ` · Tel: ${client.phone}` : ""}
+   ${client?.document ? `<br/>Documento: ${client.document}` : ""}${client?.email ? `<br/>${tr("E-mail")}: ${client.email}` : ""}${client?.phone ? ` · Tel: ${client.phone}` : ""}
    ${client?.address ? `<br/>${client.address}` : ""}</div>
-  <h2>Itens</h2>
-  <table><tr><th>#</th><th>Descrição</th><th class="r">Qtd</th><th class="r">Unitário</th><th class="r">Total</th></tr>${rows || `<tr><td colspan="5" style="color:#999">Sem itens</td></tr>`}</table>
+  <h2>${tr("Itens")}</h2>
+  <table><tr><th>#</th><th>${tr("Descrição")}</th><th class="r">${tr("Qtd")}</th><th class="r">${tr("Unitário")}</th><th class="r">${tr("Total")}</th></tr>${rows || `<tr><td colspan="5" style="color:#999">${tr("Sem itens")}</td></tr>`}</table>
   <table class="totals">
-    <tr><td>Subtotal</td><td class="r">${fmtBRL(subtotal)}</td></tr>
-    ${q.discount ? `<tr><td>Desconto</td><td class="r">- ${fmtBRL(q.discount)}</td></tr>` : ""}
-    ${q.tax ? `<tr><td>Impostos / taxas</td><td class="r">${fmtBRL(q.tax)}</td></tr>` : ""}
-    <tr class="total"><td>TOTAL</td><td class="r">${fmtBRL(total)}</td></tr>
+    <tr><td>${tr("Subtotal")}</td><td class="r">${fmtBRL(subtotal)}</td></tr>
+    ${q.discount ? `<tr><td>${tr("Desconto")}</td><td class="r">- ${fmtBRL(q.discount)}</td></tr>` : ""}
+    ${q.tax ? `<tr><td>${tr("Impostos / taxas")}</td><td class="r">${fmtBRL(q.tax)}</td></tr>` : ""}
+    <tr class="total"><td>${tr("TOTAL")}</td><td class="r">${fmtBRL(total)}</td></tr>
   </table>
-  ${q.notes ? `<h2>Observações</h2><div class="box notes">${q.notes}</div>` : ""}
+  ${q.notes ? `<h2>${tr("Observações")}</h2><div class="box notes">${q.notes}</div>` : ""}
   <div class="foot">${currentCompany()} · Documento gerado eletronicamente</div>
   </body></html>`;
 }

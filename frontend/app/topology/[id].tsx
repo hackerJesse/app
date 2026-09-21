@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { Button, Header, Icon, IconButton, Input, Row, Screen, Select, Sheet, StickyBar, confirmAsync, notify } from "@/src/components/ui";
 import { CanvasHandle, TopologyCanvas } from "@/src/components/topology-canvas";
+import { tr } from "@/src/i18n";
 import { useItem, useList, useRemove, useSave } from "@/src/hooks";
 import { canSharePdf, printHtml, sharePdf } from "@/src/pdf";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
@@ -115,7 +116,7 @@ export default function TopologyEditor() {
   const doSave = async () => {
     if (!t.name.trim()) {
       setSettings(true);
-      notify("Informe o nome da topologia");
+      notify(tr("Informe o nome da topologia"));
       return;
     }
     try {
@@ -126,12 +127,12 @@ export default function TopologyEditor() {
       setSettings(false);
       if (isNew) router.replace(`/topology/${saved.id}`);
     } catch (e: any) {
-      notify("Erro ao salvar", e?.message);
+      notify(tr("Erro ao salvar"), e?.message);
     }
   };
 
   const doDelete = async () => {
-    if (!(await confirmAsync("Excluir topologia", "Esta ação não pode ser desfeita."))) return;
+    if (!(await confirmAsync(tr("Excluir topologia"), tr("Esta ação não pode ser desfeita.")))) return;
     await remove.mutateAsync(t.id);
     router.back();
   };
@@ -142,13 +143,13 @@ export default function TopologyEditor() {
       if (share) await sharePdf(html, `${t.name || "topologia"}.pdf`);
       else await printHtml(html);
     } catch (e: any) {
-      notify("Falha ao gerar PDF", e?.message);
+      notify(tr("Falha ao gerar PDF"), e?.message);
     }
   };
 
   const setCfg = (k: keyof AutoConfig) => (v: string) => setAutoCfg((c) => ({ ...c, [k]: Math.max(0, Math.min(60, parseInt(v || "0", 10) || 0)) }));
 
-  if (!isNew && isLoading) return <Screen><Header title="Topologia" back /></Screen>;
+  if (!isNew && isLoading) return <Screen><Header title={tr("Topologia")} back /></Screen>;
 
   return (
     <Screen>
@@ -167,9 +168,9 @@ export default function TopologyEditor() {
       {connectFrom ? (
         <View style={styles.banner} testID="connect-banner">
           <Icon name="git-branch-outline" size={18} color={colors.onBrandPrimary} />
-          <Text style={styles.bannerText}>Toque no dispositivo de destino para conectar</Text>
+          <Text style={styles.bannerText}>{tr("Toque no dispositivo de destino para conectar")}</Text>
           <Pressable onPress={() => setConnectFrom(null)} testID="connect-cancel">
-            <Text style={[styles.bannerText, { textDecorationLine: "underline" }]}>Cancelar</Text>
+            <Text style={[styles.bannerText, { textDecorationLine: "underline" }]}>{tr("Cancelar")}</Text>
           </Pressable>
         </View>
       ) : null}
@@ -179,8 +180,8 @@ export default function TopologyEditor() {
         {t.nodes.length === 0 ? (
           <View style={styles.emptyOverlay} pointerEvents="none">
             <Icon name="git-network-outline" size={40} color={colors.muted} />
-            <Text style={styles.emptyTitle}>Canvas vazio</Text>
-            <Text style={styles.emptyHint}>Adicione dispositivos ou gere a topologia automaticamente.</Text>
+            <Text style={styles.emptyTitle}>{tr("Canvas vazio")}</Text>
+            <Text style={styles.emptyHint}>{tr("Adicione dispositivos ou gere a topologia automaticamente.")}</Text>
           </View>
         ) : null}
         <View style={styles.zoomBox}>
@@ -191,17 +192,17 @@ export default function TopologyEditor() {
       </View>
 
       <StickyBar>
-        <Button title={dirty || isNew ? "Salvar" : "Salvo"} icon="save-outline" onPress={doSave} loading={save.isPending} disabled={!dirty && !isNew} style={{ flex: 1 }} testID="topo-save" />
+        <Button title={dirty || isNew ? tr("Salvar") : tr("Salvo")} icon="save-outline" onPress={doSave} loading={save.isPending} disabled={!dirty && !isNew} style={{ flex: 1 }} testID="topo-save" />
         <Button title="" icon="add-circle-outline" variant="secondary" onPress={() => setAddSheet(true)} testID="topo-add" />
-        <Button title="Auto" icon="flash-outline" variant="secondary" onPress={() => setAutoSheet(true)} testID="topo-auto" />
+        <Button title={tr("Auto")} icon="flash-outline" variant="secondary" onPress={() => setAutoSheet(true)} testID="topo-auto" />
         <Button title="" icon="print-outline" variant="secondary" onPress={() => exportPdf(false)} testID="topo-print" />
         {canSharePdf ? <Button title="" icon="share-outline" variant="secondary" onPress={() => exportPdf(true)} /> : null}
       </StickyBar>
 
       {/* Settings */}
-      <Sheet visible={settings} onClose={() => setSettings(false)} title="Topologia" footer={<Button title="Aplicar" onPress={() => (t.name.trim() ? setSettings(false) : notify("Informe o nome"))} testID="topo-settings-apply" />}>
-        <Input label="Nome *" value={t.name} onChangeText={(v) => patch({ name: v })} placeholder="Rede matriz - Térreo" testID="topo-name" />
-        <Select label="Cliente" value={t.client_id ?? ""} options={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))} onChange={(v) => patch({ client_id: v, client_name: clients.data?.find((c) => c.id === v)?.name ?? "" })} testID="topo-client" />
+      <Sheet visible={settings} onClose={() => setSettings(false)} title={tr("Topologia")} footer={<Button title={tr("Aplicar")} onPress={() => (t.name.trim() ? setSettings(false) : notify(tr("Informe o nome")))} testID="topo-settings-apply" />}>
+        <Input label={tr("Nome *")} value={t.name} onChangeText={(v) => patch({ name: v })} placeholder={tr("Rede matriz - Térreo")} testID="topo-name" />
+        <Select label={tr("Cliente")} value={t.client_id ?? ""} options={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))} onChange={(v) => patch({ client_id: v, client_name: clients.data?.find((c) => c.id === v)?.name ?? "" })} testID="topo-client" />
       </Sheet>
 
       {/* Node editor */}
@@ -211,21 +212,21 @@ export default function TopologyEditor() {
         title={selected ? `${NODE_KIND_MAP[selected.kind]?.label ?? selected.kind}` : ""}
         footer={
           <Row gap={8}>
-            <Button title="Remover" variant="danger" onPress={removeNode} testID="node-remove" />
-            <Button title="Conectar" variant="secondary" icon="git-branch-outline" onPress={startConnect} testID="node-connect" />
-            <Button title="Salvar" onPress={saveNode} style={{ flex: 1 }} testID="node-save" />
+            <Button title={tr("Remover")} variant="danger" onPress={removeNode} testID="node-remove" />
+            <Button title={tr("Conectar")} variant="secondary" icon="git-branch-outline" onPress={startConnect} testID="node-connect" />
+            <Button title={tr("Salvar")} onPress={saveNode} style={{ flex: 1 }} testID="node-save" />
           </Row>
         }
       >
         {selected ? (
           <>
-            <Input label="Nome" value={selected.label} onChangeText={(v) => setSelected({ ...selected, label: v })} testID="node-label" />
-            <Select label="Tipo" value={selected.kind} options={NODE_KINDS.map((k) => ({ value: k.kind, label: k.label }))} onChange={(v) => setSelected({ ...selected, kind: v })} testID="node-kind" />
+            <Input label={tr("Nome")} value={selected.label} onChangeText={(v) => setSelected({ ...selected, label: v })} testID="node-label" />
+            <Select label={tr("Tipo")} value={selected.kind} options={NODE_KINDS.map((k) => ({ value: k.kind, label: k.label }))} onChange={(v) => setSelected({ ...selected, kind: v })} testID="node-kind" />
             <Row gap={8}>
-              <Input style={{ flex: 1 }} label="IP / Rede" value={selected.ip} onChangeText={(v) => setSelected({ ...selected, ip: v })} placeholder="192.168.0.10" autoCapitalize="none" testID="node-ip" />
-              <Input style={{ flex: 1 }} label="Portas" value={selected.ports} onChangeText={(v) => setSelected({ ...selected, ports: v })} placeholder="24x1G + 4xSFP" testID="node-ports" />
+              <Input style={{ flex: 1 }} label={tr("IP / Rede")} value={selected.ip} onChangeText={(v) => setSelected({ ...selected, ip: v })} placeholder="192.168.0.10" autoCapitalize="none" testID="node-ip" />
+              <Input style={{ flex: 1 }} label={tr("Portas")} value={selected.ports} onChangeText={(v) => setSelected({ ...selected, ports: v })} placeholder="24x1G + 4xSFP" testID="node-ports" />
             </Row>
-            <Input label="Local / Sala" value={selected.room} onChangeText={(v) => setSelected({ ...selected, room: v })} placeholder="Sala técnica" />
+            <Input label={tr("Local / Sala")} value={selected.room} onChangeText={(v) => setSelected({ ...selected, room: v })} placeholder={tr("Sala técnica")} />
             <Text style={styles.hint}>
               Conexões: {t.links.filter((l) => l.source === selected.id || l.target === selected.id).length}. Arraste o dispositivo no canvas para reposicionar.
             </Text>
@@ -237,11 +238,11 @@ export default function TopologyEditor() {
       <Sheet
         visible={!!linkSel}
         onClose={() => setLinkSel(null)}
-        title="Conexão"
+        title={tr("Conexão")}
         footer={
           <Row gap={8}>
             <Button
-              title="Remover"
+              title={tr("Remover")}
               variant="danger"
               testID="link-remove"
               onPress={() => {
@@ -250,7 +251,7 @@ export default function TopologyEditor() {
               }}
             />
             <Button
-              title="Salvar"
+              title={tr("Salvar")}
               style={{ flex: 1 }}
               testID="link-save"
               onPress={() => {
@@ -266,44 +267,44 @@ export default function TopologyEditor() {
             <Text style={styles.hint}>
               {t.nodes.find((n) => n.id === linkSel.source)?.label} ⟷ {t.nodes.find((n) => n.id === linkSel.target)?.label}
             </Text>
-            <Input label="Rótulo (porta / VLAN / cabo)" value={linkSel.label} onChangeText={(v) => setLinkSel({ ...linkSel, label: v })} placeholder="Gi0/1 · VLAN 10 · Cat6" testID="link-label" />
+            <Input label={tr("Rótulo (porta / VLAN / cabo)")} value={linkSel.label} onChangeText={(v) => setLinkSel({ ...linkSel, label: v })} placeholder="Gi0/1 · VLAN 10 · Cat6" testID="link-label" />
           </>
         ) : null}
       </Sheet>
 
       {/* Add node */}
-      <Sheet visible={addSheet} onClose={() => setAddSheet(false)} title="Adicionar dispositivo">
+      <Sheet visible={addSheet} onClose={() => setAddSheet(false)} title={tr("Adicionar dispositivo")}>
         <View style={styles.kindGrid}>
           {NODE_KINDS.map((k) => (
             <Pressable key={k.kind} testID={`add-kind-${k.kind}`} onPress={() => addNode(k.kind)} style={styles.kind}>
               <Icon name={k.icon as any} size={22} color={k.color} />
-              <Text style={styles.kindText}>{k.label}</Text>
+              <Text style={styles.kindText}>{tr(k.label)}</Text>
             </Pressable>
           ))}
         </View>
       </Sheet>
 
       {/* Auto generate */}
-      <Sheet visible={autoSheet} onClose={() => setAutoSheet(false)} title="Gerar topologia automaticamente" footer={<Button title="Gerar" icon="flash-outline" onPress={runAuto} testID="auto-run" />}>
-        <Text style={styles.hint}>Informe a quantidade de equipamentos. A topologia será gerada em estrela (roteador → switches → dispositivos finais) e poderá ser ajustada manualmente.</Text>
+      <Sheet visible={autoSheet} onClose={() => setAutoSheet(false)} title={tr("Gerar topologia automaticamente")} footer={<Button title={tr("Gerar")} icon="flash-outline" onPress={runAuto} testID="auto-run" />}>
+        <Text style={styles.hint}>{tr("Informe a quantidade de equipamentos. A topologia será gerada em estrela (roteador → switches → dispositivos finais) e poderá ser ajustada manualmente.")}</Text>
         <Row>
-          <Text style={[styles.hint, { flex: 1, color: colors.onSurface }]}>Incluir Internet / WAN</Text>
+          <Text style={[styles.hint, { flex: 1, color: colors.onSurface }]}>{tr("Incluir Internet / WAN")}</Text>
           <Switch value={autoCfg.hasInternet} onValueChange={(v) => setAutoCfg({ ...autoCfg, hasInternet: v })} trackColor={{ true: colors.brandPrimary, false: colors.surfaceTertiary }} testID="auto-internet" />
         </Row>
         <Row gap={8}>
-          <Input style={{ flex: 1 }} label="Roteadores" value={String(autoCfg.routers)} onChangeText={setCfg("routers")} keyboardType="number-pad" testID="auto-routers" />
-          <Input style={{ flex: 1 }} label="Switches" value={String(autoCfg.switches)} onChangeText={setCfg("switches")} keyboardType="number-pad" testID="auto-switches" />
-          <Input style={{ flex: 1 }} label="Servidores" value={String(autoCfg.servers)} onChangeText={setCfg("servers")} keyboardType="number-pad" testID="auto-servers" />
+          <Input style={{ flex: 1 }} label={tr("Roteadores")} value={String(autoCfg.routers)} onChangeText={setCfg("routers")} keyboardType="number-pad" testID="auto-routers" />
+          <Input style={{ flex: 1 }} label={tr("Switches")} value={String(autoCfg.switches)} onChangeText={setCfg("switches")} keyboardType="number-pad" testID="auto-switches" />
+          <Input style={{ flex: 1 }} label={tr("Servidores")} value={String(autoCfg.servers)} onChangeText={setCfg("servers")} keyboardType="number-pad" testID="auto-servers" />
         </Row>
         <Row gap={8}>
-          <Input style={{ flex: 1 }} label="Computadores" value={String(autoCfg.pcs)} onChangeText={setCfg("pcs")} keyboardType="number-pad" testID="auto-pcs" />
-          <Input style={{ flex: 1 }} label="Access Points" value={String(autoCfg.aps)} onChangeText={setCfg("aps")} keyboardType="number-pad" testID="auto-aps" />
+          <Input style={{ flex: 1 }} label={tr("Computadores")} value={String(autoCfg.pcs)} onChangeText={setCfg("pcs")} keyboardType="number-pad" testID="auto-pcs" />
+          <Input style={{ flex: 1 }} label={tr("Access Points")} value={String(autoCfg.aps)} onChangeText={setCfg("aps")} keyboardType="number-pad" testID="auto-aps" />
         </Row>
         <Row gap={8}>
-          <Input style={{ flex: 1 }} label="Impressoras" value={String(autoCfg.printers)} onChangeText={setCfg("printers")} keyboardType="number-pad" testID="auto-printers" />
-          <Input style={{ flex: 1 }} label="Câmeras" value={String(autoCfg.cameras)} onChangeText={setCfg("cameras")} keyboardType="number-pad" testID="auto-cameras" />
+          <Input style={{ flex: 1 }} label={tr("Impressoras")} value={String(autoCfg.printers)} onChangeText={setCfg("printers")} keyboardType="number-pad" testID="auto-printers" />
+          <Input style={{ flex: 1 }} label={tr("Câmeras")} value={String(autoCfg.cameras)} onChangeText={setCfg("cameras")} keyboardType="number-pad" testID="auto-cameras" />
         </Row>
-        {t.nodes.length > 0 ? <Text style={[styles.hint, { color: colors.warning }]}>Atenção: o diagrama atual será substituído.</Text> : null}
+        {t.nodes.length > 0 ? <Text style={[styles.hint, { color: colors.warning }]}>{tr("Atenção: o diagrama atual será substituído.")}</Text> : null}
       </Sheet>
     </Screen>
   );

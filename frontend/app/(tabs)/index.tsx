@@ -8,7 +8,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { api } from "@/src/api";
 import { useAuth } from "@/src/auth";
 import { useSettings } from "@/src/brand";
-import { useT } from "@/src/i18n";
+import { useT, tr } from "@/src/i18n";
 import { AreaChart, Donut, LegendDot, StackedBars } from "@/src/components/charts";
 import { Badge, Card, Icon, IconButton, Screen, SectionTitle, openMainMenu } from "@/src/components/ui";
 import { BrazilMap } from "@/src/components/brazil-map";
@@ -197,7 +197,7 @@ export default function DashboardScreen() {
           {(topos.data ?? []).length === 0 ? (
             <Pressable style={styles.topoCard} onPress={() => router.push("/topology/new")} testID="topo-new-card">
               <Icon name="add-circle-outline" size={22} color={colors.brandPrimary} />
-              <Text style={styles.topoName}>Criar topologia</Text>
+              <Text style={styles.topoName}>{tr("Criar topologia")}</Text>
             </Pressable>
           ) : null}
           {(topos.data ?? []).map((t) => (
@@ -236,7 +236,7 @@ export default function DashboardScreen() {
                       <Text style={styles.qNum}>
                         {q.number} · {q.client_name || "Sem cliente"}
                       </Text>
-                      <Text style={styles.cardSub}>{q.kind === "servico" ? "Serviço" : "Venda"}</Text>
+                      <Text style={styles.cardSub}>{q.kind === "servico" ? tr("Serviço") : tr("Venda")}</Text>
                     </View>
                     <Text style={styles.qTotal}>{fmtBRL(quoteTotal(q))}</Text>
                     <Badge text={q.status} tone={STATUS_TONE[q.status] ?? "neutral"} />

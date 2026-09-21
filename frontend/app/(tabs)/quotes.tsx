@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { Badge, Button, Card, Empty, Fab, Header, Input, Loading, Row, Screen, Segmented, Select } from "@/src/components/ui";
 import { useList } from "@/src/hooks";
 import { fonts, makeStyles } from "@/src/theme";
-import { useT } from "@/src/i18n";
+import { useT, tr } from "@/src/i18n";
 import { Client, QUOTE_STATUS, Quote, STATUS_TONE, fmtBRL, fmtDate, quoteTotal } from "@/src/types";
 
 type Filter = "todos" | Quote["status"];
@@ -47,14 +47,14 @@ export default function QuotesScreen() {
       <Segmented options={[{ value: "todos" as Filter, label: "Todos" }, ...QUOTE_STATUS]} value={filter} onChange={setFilter} />
       <View style={{ paddingHorizontal: 16, gap: 8 }}>
         <Row gap={8} style={{ alignItems: "flex-start" }}>
-          <Input style={{ flex: 1 }} value={code} onChangeText={setCode} placeholder="Código (ORC-...)" autoCapitalize="characters" testID="quote-filter-code" />
+          <Input style={{ flex: 1 }} value={code} onChangeText={setCode} placeholder={tr("Código (ORC-...)")} autoCapitalize="characters" testID="quote-filter-code" />
           <View style={{ flex: 1.3 }}>
-            <Select value={clientId} options={[{ value: "", label: "Todos os clientes" }, ...(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))]} onChange={setClientId} placeholder="Cliente" testID="quote-filter-client" />
+            <Select value={clientId} options={[{ value: "", label: "Todos os clientes" }, ...(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))]} onChange={setClientId} placeholder={tr("Cliente")} testID="quote-filter-client" />
           </View>
         </Row>
         <Row gap={8}>
-          <Input style={{ flex: 1 }} value={from} onChangeText={setFrom} placeholder="De (dd/mm/aaaa)" keyboardType="numbers-and-punctuation" testID="quote-filter-from" />
-          <Input style={{ flex: 1 }} value={to} onChangeText={setTo} placeholder="Até (dd/mm/aaaa)" keyboardType="numbers-and-punctuation" testID="quote-filter-to" />
+          <Input style={{ flex: 1 }} value={from} onChangeText={setFrom} placeholder={tr("De (dd/mm/aaaa)")} keyboardType="numbers-and-punctuation" testID="quote-filter-from" />
+          <Input style={{ flex: 1 }} value={to} onChangeText={setTo} placeholder={tr("Até (dd/mm/aaaa)")} keyboardType="numbers-and-punctuation" testID="quote-filter-to" />
         </Row>
       </View>
       {quotes.isLoading ? (
@@ -69,23 +69,23 @@ export default function QuotesScreen() {
           ListEmptyComponent={
             <Empty
               icon="folder-open-outline"
-              title="Nenhum orçamento"
-              hint="Crie um orçamento de venda ou serviço e exporte em PDF."
-              action={<Button title="Novo orçamento" onPress={() => router.push("/quote/new")} testID="empty-new-quote" />}
+              title={tr("Nenhum orçamento")}
+              hint={tr("Crie um orçamento de venda ou serviço e exporte em PDF.")}
+              action={<Button title={tr("Novo orçamento")} onPress={() => router.push("/quote/new")} testID="empty-new-quote" />}
             />
           }
           renderItem={({ item: q }) => (
             <Card onPress={() => router.push(`/quote/${q.id}`)} testID={`quote-card-${q.id}`}>
               <View style={styles.row}>
                 <Text style={styles.number}>{q.number}</Text>
-                <Badge text={q.kind === "servico" ? "Serviço" : "Venda"} tone="brand" />
+                <Badge text={q.kind === "servico" ? tr("Serviço") : tr("Venda")} tone="brand" />
                 <View style={{ flex: 1 }} />
                 <Badge text={q.status} tone={STATUS_TONE[q.status] ?? "neutral"} />
               </View>
               <Text style={styles.client}>{q.client_name || "Sem cliente"}</Text>
               <View style={styles.row}>
                 <Text style={styles.meta}>
-                  {q.items.length} {q.items.length === 1 ? "item" : "itens"} · {fmtDate(q.created_at)}
+                  {q.items.length} {q.items.length === 1 ? tr("item") : tr("itens")} · {fmtDate(q.created_at)}
                 </Text>
                 <View style={{ flex: 1 }} />
                 <Text style={styles.total}>{fmtBRL(quoteTotal(q))}</Text>

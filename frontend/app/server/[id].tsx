@@ -9,6 +9,7 @@ import { Button, Header, IconButton, Input, Row, Screen, Select, StickyBar, conf
 import { useItem, useList, useRemove, useSave } from "@/src/hooks";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 import { Client, Server, Topology } from "@/src/types";
+import { tr } from "@/src/i18n";
 
 const EMPTY: Server = {
   id: "",
@@ -69,7 +70,7 @@ export default function ServerForm() {
 
   const doSave = async () => {
     if (!s.name.trim() || !s.host.trim()) {
-      setErr("Nome e host são obrigatórios");
+      setErr(tr("Nome e host são obrigatórios"));
       return;
     }
     setErr("");
@@ -79,12 +80,12 @@ export default function ServerForm() {
       await save.mutateAsync(body);
       router.back();
     } catch (e: any) {
-      notify("Erro ao salvar", e?.message);
+      notify(tr("Erro ao salvar"), e?.message);
     }
   };
 
   const doDelete = async () => {
-    if (!(await confirmAsync("Excluir servidor", `Remover ${s.name}?`))) return;
+    if (!(await confirmAsync(tr("Excluir servidor"), `Remover ${s.name}?`))) return;
     await remove.mutateAsync(s.id);
     router.back();
   };
@@ -96,36 +97,36 @@ export default function ServerForm() {
       <Header title={isNew ? "Novo servidor" : s.name || "Servidor"} back right={!isNew ? <IconButton name="trash-outline" color={colors.error} onPress={doDelete} testID="server-delete" /> : undefined} />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }} keyboardShouldPersistTaps="handled">
-          <Input label="Nome *" value={s.name} onChangeText={set("name")} placeholder="SRV-FILE-01" error={err} testID="server-name" />
+          <Input label={tr("Nome *")} value={s.name} onChangeText={set("name")} placeholder="SRV-FILE-01" error={err} testID="server-name" />
           <Row gap={8}>
-            <Input style={{ flex: 2 }} label="Host / IP *" value={s.host} onChangeText={set("host")} placeholder="srv.cliente.com.br" autoCapitalize="none" testID="server-host" />
-            <Input style={{ flex: 1 }} label="Porta" value={port} onChangeText={setPort} keyboardType="number-pad" testID="server-port" />
+            <Input style={{ flex: 2 }} label={tr("Host / IP *")} value={s.host} onChangeText={set("host")} placeholder="srv.cliente.com.br" autoCapitalize="none" testID="server-host" />
+            <Input style={{ flex: 1 }} label={tr("Porta")} value={port} onChangeText={setPort} keyboardType="number-pad" testID="server-port" />
           </Row>
-          <Select label="Cliente" value={s.client_id ?? ""} options={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))} onChange={(v) => setS((p) => ({ ...p, client_id: v, client_name: clients.data?.find((c) => c.id === v)?.name ?? "" }))} testID="server-client" />
-          <Input label="Função" value={s.role} onChangeText={set("role")} placeholder="Servidor de arquivos, AD, Firewall, NVR..." testID="server-role" />
+          <Select label={tr("Cliente")} value={s.client_id ?? ""} options={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))} onChange={(v) => setS((p) => ({ ...p, client_id: v, client_name: clients.data?.find((c) => c.id === v)?.name ?? "" }))} testID="server-client" />
+          <Input label={tr("Função")} value={s.role} onChangeText={set("role")} placeholder={tr("Servidor de arquivos, AD, Firewall, NVR...")} testID="server-role" />
 
-          <Text style={styles.section}>LOCALIZAÇÃO NO MAPA</Text>
+          <Text style={styles.section}>{tr("LOCALIZAÇÃO NO MAPA")}</Text>
           <StateCityPicker state={s.state} city={s.city} onChange={pickGeo} testID="server-geo" />
-          <Text style={styles.hint}>Ou toque no mapa para ajustar a posição manualmente.</Text>
+          <Text style={styles.hint}>{tr("Ou toque no mapa para ajustar a posição manualmente.")}</Text>
           <View style={styles.mapBox}>
             <BrazilMap servers={[preview]} selectedId={preview.id} onMapPress={(x, y) => setS((p) => ({ ...p, map_x: x, map_y: y }))} />
           </View>
 
-          <Text style={styles.section}>ESPECIFICAÇÕES TÉCNICAS</Text>
+          <Text style={styles.section}>{tr("ESPECIFICAÇÕES TÉCNICAS")}</Text>
           <Row gap={8}>
-            <Input style={{ flex: 1 }} label="Sistema" value={s.os} onChangeText={set("os")} placeholder="Windows Server 2022" testID="server-os" />
+            <Input style={{ flex: 1 }} label={tr("Sistema")} value={s.os} onChangeText={set("os")} placeholder="Windows Server 2022" testID="server-os" />
             <Input style={{ flex: 1 }} label="CPU" value={s.cpu} onChangeText={set("cpu")} placeholder="Xeon E-2336" />
           </Row>
           <Row gap={8}>
             <Input style={{ flex: 1 }} label="RAM" value={s.ram} onChangeText={set("ram")} placeholder="64 GB" />
-            <Input style={{ flex: 1 }} label="Disco" value={s.disk} onChangeText={set("disk")} placeholder="2x 2TB RAID1" />
+            <Input style={{ flex: 1 }} label={tr("Disco")} value={s.disk} onChangeText={set("disk")} placeholder="2x 2TB RAID1" />
           </Row>
-          <Input label="Escopo de rede / observações (sensível)" value={s.notes} onChangeText={set("notes")} multiline placeholder="192.168.10.0/24 · VLAN 10 · Gateway .1" />
-          <Select label="Topologia vinculada" value={s.topology_id ?? ""} options={(topos.data ?? []).map((t) => ({ value: t.id, label: t.name }))} onChange={(v) => setS((p) => ({ ...p, topology_id: v }))} testID="server-topology" />
+          <Input label={tr("Escopo de rede / observações (sensível)")} value={s.notes} onChangeText={set("notes")} multiline placeholder="192.168.10.0/24 · VLAN 10 · Gateway .1" />
+          <Select label={tr("Topologia vinculada")} value={s.topology_id ?? ""} options={(topos.data ?? []).map((t) => ({ value: t.id, label: t.name }))} onChange={(v) => setS((p) => ({ ...p, topology_id: v }))} testID="server-topology" />
         </ScrollView>
       </KeyboardAvoidingView>
       <StickyBar>
-        <Button title="Salvar servidor" icon="save-outline" onPress={doSave} loading={save.isPending} style={{ flex: 1 }} testID="server-save" />
+        <Button title={tr("Salvar servidor")} icon="save-outline" onPress={doSave} loading={save.isPending} style={{ flex: 1 }} testID="server-save" />
       </StickyBar>
     </Screen>
   );

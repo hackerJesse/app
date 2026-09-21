@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { Button, Card, Empty, Fab, Header, Icon, Loading, Screen, Segmented } from "@/src/components/ui";
 import { useList } from "@/src/hooks";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
-import { useT } from "@/src/i18n";
+import { useT, tr } from "@/src/i18n";
 import { FloorPlan, Rack, Topology } from "@/src/types";
 
 type Tab = "racks" | "topologies" | "floorplans";
@@ -32,12 +32,12 @@ export default function InfraScreen() {
   const subtitle = (item: any) => {
     if (tab === "racks") return `${item.size_u}U · ${item.slots.length} equipamentos${item.location ? ` · ${item.location}` : ""}`;
     if (tab === "topologies") return `${item.nodes.length} dispositivos · ${item.links.length} conexões`;
-    return `${item.mode === "upload" ? "Imagem" : "Desenho"} · ${item.points.length} pontos de rede`;
+    return `${item.mode === "upload" ? tr("Imagem") : tr("Desenho")} · ${item.points.length} pontos de rede`;
   };
 
   return (
     <Screen>
-      <Header title={t("infra")} subtitle="Racks · Topologias · Plantas" back />
+      <Header title={t("infra")} subtitle={tr("Racks · Topologias · Plantas")} back />
       <Segmented
         options={[
           { value: "racks", label: `Racks (${racks.data?.length ?? 0})` },

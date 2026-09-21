@@ -11,7 +11,7 @@ import { AreaChart } from "@/src/components/charts";
 import { Badge, Button, Card, Empty, Fab, Header, Icon, Row, Screen, Segmented, Sheet, notify } from "@/src/components/ui";
 import { useList } from "@/src/hooks";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
-import { useT } from "@/src/i18n";
+import { useT, tr } from "@/src/i18n";
 import { Server, Topology, fmtDate } from "@/src/types";
 
 function mask(v: string) {
@@ -72,7 +72,7 @@ export default function ServerMapScreen() {
       <Header
         title={t("servers")}
         subtitle={`${list.length} monitorados · ${online} online · ${unstable} instáveis`}
-        right={<Button small title="Verificar" icon="pulse-outline" variant="ghost" onPress={() => checkAll.mutate()} loading={checkAll.isPending} testID="check-all" />}
+        right={<Button small title={tr("Verificar")} icon="pulse-outline" variant="ghost" onPress={() => checkAll.mutate()} loading={checkAll.isPending} testID="check-all" />}
       />
       <FlatList
         data={list}
@@ -83,12 +83,12 @@ export default function ServerMapScreen() {
         ListHeaderComponent={
           <View style={styles.mapBox}>
             <BrazilMap servers={list} onPinPress={openServer} selectedId={sel?.id} zoomable warnMs={warnMs} />
-            <Text style={styles.hint}>Pinça para zoom · verde online · amarelo instável · vermelho offline</Text>
+            <Text style={styles.hint}>{tr("Pinça para zoom · verde online · amarelo instável · vermelho offline")}</Text>
           </View>
         }
         ListEmptyComponent={
           servers.isLoading ? null : (
-            <Empty icon="hardware-chip-outline" title="Nenhum servidor" hint="Cadastre servidores com host/porta para monitorar o status no mapa." action={<Button title="Novo servidor" onPress={() => router.push("/server/new")} testID="empty-new-server" />} />
+            <Empty icon="hardware-chip-outline" title={tr("Nenhum servidor")} hint={tr("Cadastre servidores com host/porta para monitorar o status no mapa.")} action={<Button title={tr("Novo servidor")} onPress={() => router.push("/server/new")} testID="empty-new-server" />} />
           )
         }
         renderItem={({ item: s }) => (
@@ -120,9 +120,9 @@ export default function ServerMapScreen() {
         title={sel?.name ?? ""}
         footer={
           <Row gap={8}>
-            <Button title="Verificar" icon="pulse-outline" variant="secondary" onPress={() => sel && checkOne.mutate(sel.id)} loading={checkOne.isPending} testID="check-one" />
-            <Button title="Agente" icon="terminal-outline" variant="secondary" onPress={() => setAgentOpen(true)} testID="agent-open" />
-            <Button title="Editar" icon="create-outline" style={{ flex: 1 }} onPress={() => { const id = sel?.id; setSel(null); if (id) router.push(`/server/${id}`); }} testID="server-edit" />
+            <Button title={tr("Verificar")} icon="pulse-outline" variant="secondary" onPress={() => sel && checkOne.mutate(sel.id)} loading={checkOne.isPending} testID="check-one" />
+            <Button title={tr("Agente")} icon="terminal-outline" variant="secondary" onPress={() => setAgentOpen(true)} testID="agent-open" />
+            <Button title={tr("Editar")} icon="create-outline" style={{ flex: 1 }} onPress={() => { const id = sel?.id; setSel(null); if (id) router.push(`/server/${id}`); }} testID="server-edit" />
           </Row>
         }
       >
@@ -138,41 +138,41 @@ export default function ServerMapScreen() {
               <Card style={{ gap: 8 }} testID="server-metrics">
                 <Text style={styles.secLabel}>RECURSOS (AGENTE{agentStale(sel) ? " · SEM CONTATO" : ""})</Text>
                 <Meter label="CPU" value={sel.metrics.cpu} />
-                <Meter label="Memória" value={sel.metrics.mem} />
-                <Meter label="Disco" value={sel.metrics.disk} />
+                <Meter label={tr("Memória")} value={sel.metrics.mem} />
+                <Meter label={tr("Disco")} value={sel.metrics.disk} />
                 <Text style={styles.meta}>
                   {[sel.metrics.hostname, sel.metrics.os, sel.metrics.uptime && `up ${sel.metrics.uptime}`].filter(Boolean).join(" · ")}
                 </Text>
                 {(sel.metrics_history?.length ?? 0) > 1 ? (
                   <>
-                    <Text style={styles.secLabel}>CPU · HISTÓRICO</Text>
+                    <Text style={styles.secLabel}>{tr("CPU · HISTÓRICO")}</Text>
                     <AreaChart values={(sel.metrics_history ?? []).map((m) => m.cpu ?? 0)} height={60} />
                   </>
                 ) : null}
               </Card>
             ) : (
               <Card>
-                <Text style={styles.meta}>Sem dados de CPU/memória/disco. Instale o agente de monitoramento (botão "Agente").</Text>
+                <Text style={styles.meta}>{tr("Sem dados de CPU/memória/disco. Instale o agente de monitoramento (botão \"Agente\").")}</Text>
               </Card>
             )}
 
             <Pressable onPress={() => setReveal((r) => !r)} style={styles.secure} testID="reveal-toggle">
               <Row>
                 <Icon name={reveal ? "eye-off-outline" : "eye-outline"} size={18} color={colors.brandPrimary} />
-                <Text style={styles.secureTitle}>{reveal ? "OCULTAR DADOS SENSÍVEIS" : "TOQUE PARA REVELAR DADOS DE ACESSO"}</Text>
+                <Text style={styles.secureTitle}>{reveal ? tr("OCULTAR DADOS SENSÍVEIS") : tr("TOQUE PARA REVELAR DADOS DE ACESSO")}</Text>
               </Row>
-              <Spec label="Host / Domínio" value={reveal ? sel.host : mask(sel.host)} testID="spec-host" />
-              <Spec label="Porta" value={reveal ? String(sel.port) : mask(String(sel.port))} />
-              {sel.notes ? <Spec label="Escopo / Rede" value={reveal ? sel.notes : mask(sel.notes)} /> : null}
+              <Spec label={tr("Host / Domínio")} value={reveal ? sel.host : mask(sel.host)} testID="spec-host" />
+              <Spec label={tr("Porta")} value={reveal ? String(sel.port) : mask(String(sel.port))} />
+              {sel.notes ? <Spec label={tr("Escopo / Rede")} value={reveal ? sel.notes : mask(sel.notes)} /> : null}
             </Pressable>
             <View style={styles.specGrid}>
-              <Spec label="Cliente" value={sel.client_name || "—"} />
-              <Spec label="Cidade" value={sel.city || "—"} />
-              <Spec label="Função" value={sel.role || "—"} />
-              <Spec label="Sistema" value={sel.os || "—"} />
+              <Spec label={tr("Cliente")} value={sel.client_name || "—"} />
+              <Spec label={tr("Cidade")} value={sel.city || "—"} />
+              <Spec label={tr("Função")} value={sel.role || "—"} />
+              <Spec label={tr("Sistema")} value={sel.os || "—"} />
               <Spec label="CPU" value={sel.cpu || "—"} />
               <Spec label="RAM" value={sel.ram || "—"} />
-              <Spec label="Disco" value={sel.disk || "—"} />
+              <Spec label={tr("Disco")} value={sel.disk || "—"} />
             </View>
             {sel.topology_id ? (
               <Button title={`Topologia: ${topoName(sel.topology_id) ?? "abrir"}`} icon="git-network-outline" variant="ghost" onPress={() => { const tid = sel.topology_id; setSel(null); router.push(`/topology/${tid}`); }} testID="server-topology" />
@@ -184,16 +184,16 @@ export default function ServerMapScreen() {
       <Sheet
         visible={agentOpen}
         onClose={() => setAgentOpen(false)}
-        title="Agente de monitoramento"
+        title={tr("Agente de monitoramento")}
         footer={
           <Button
-            title="Copiar script"
+            title={tr("Copiar script")}
             icon="copy-outline"
             testID="agent-copy"
             onPress={async () => {
               if (script.data?.script) {
                 await Clipboard.setStringAsync(script.data.script);
-                notify("Script copiado", "Cole no servidor conforme as instruções.");
+                notify(tr("Script copiado"), tr("Cole no servidor conforme as instruções."));
               }
             }}
           />
@@ -205,11 +205,11 @@ export default function ServerMapScreen() {
             ? "1) Salve o script em /opt/nsecurity/agent.sh e dê permissão: chmod +x agent.sh\n2) Agende no cron a cada 5 min: */5 * * * * /opt/nsecurity/agent.sh\n3) Firewall: permitir SAÍDA TCP 443 (HTTPS) para o endereço do app. Para o teste de latência externo, permitir ENTRADA na porta cadastrada (ex.: 22, 443, 3389) a partir da internet."
             : "1) Salve como C:\\NSecurity\\agent.ps1\n2) Agendador de Tarefas: executar a cada 5 min → powershell.exe -ExecutionPolicy Bypass -File C:\\NSecurity\\agent.ps1\n3) Firewall do Windows: permitir SAÍDA TCP 443 (HTTPS) para o app. Para o teste de latência externo, liberar ENTRADA na porta cadastrada (ex.: 3389, 443) a partir da internet."}
         </Text>
-        <Text style={styles.secLabel}>CHAVE DO AGENTE</Text>
+        <Text style={styles.secLabel}>{tr("CHAVE DO AGENTE")}</Text>
         <Text selectable style={styles.code} testID="agent-key">
           {script.data?.agent_key ?? "..."}
         </Text>
-        <Text style={styles.secLabel}>SCRIPT</Text>
+        <Text style={styles.secLabel}>{tr("SCRIPT")}</Text>
         <Text selectable style={styles.code}>
           {script.isLoading ? "Gerando..." : script.data?.script ?? ""}
         </Text>

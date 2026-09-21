@@ -13,6 +13,7 @@ import { printHtml, sharePdf } from "@/src/pdf";
 import { Topology } from "@/src/types";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 import { Client, FloorPlan, FloorPoint, FloorRoom, uid } from "@/src/types";
+import { tr } from "@/src/i18n";
 
 const EMPTY: FloorPlan = { id: "", name: "", client_id: "", client_name: "", mode: "upload", image_path: "", points: [], rooms: [] };
 
@@ -64,7 +65,7 @@ export default function FloorPlanScreen() {
       let perm = await ImagePicker.getMediaLibraryPermissionsAsync();
       if (!perm.granted && perm.canAskAgain) perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!perm.granted) {
-        if (await confirmAsync("Permissão necessária", "Permita o acesso às fotos para enviar a planta. Abrir configurações?")) Linking.openSettings();
+        if (await confirmAsync(tr("Permissão necessária"), tr("Permita o acesso às fotos para enviar a planta. Abrir configurações?"))) Linking.openSettings();
         return;
       }
     }
@@ -77,7 +78,7 @@ export default function FloorPlanScreen() {
       if (a.width && a.height) setRatio(a.width / a.height);
       patch({ image_path: path, mode: "upload" });
     } catch (e: any) {
-      notify("Falha no upload", e?.message);
+      notify(tr("Falha no upload"), e?.message);
     } finally {
       setUploading(false);
     }
@@ -116,7 +117,7 @@ export default function FloorPlanScreen() {
   const doSave = async () => {
     if (!fp.name.trim()) {
       setSettings(true);
-      notify("Informe o nome da planta");
+      notify(tr("Informe o nome da planta"));
       return;
     }
     try {
@@ -127,12 +128,12 @@ export default function FloorPlanScreen() {
       setSettings(false);
       if (isNew) router.replace(`/floorplan/${saved.id}`);
     } catch (e: any) {
-      notify("Erro ao salvar", e?.message);
+      notify(tr("Erro ao salvar"), e?.message);
     }
   };
 
   const doDelete = async () => {
-    if (!(await confirmAsync("Excluir planta", "Esta ação não pode ser desfeita."))) return;
+    if (!(await confirmAsync(tr("Excluir planta"), tr("Esta ação não pode ser desfeita.")))) return;
     await remove.mutateAsync(fp.id);
     router.back();
   };
@@ -144,20 +145,20 @@ export default function FloorPlanScreen() {
       if (share) await sharePdf(html, `${fp.name || "planta"}.pdf`);
       else await printHtml(html);
     } catch (e: any) {
-      notify("Falha ao gerar PDF", e?.message);
+      notify(tr("Falha ao gerar PDF"), e?.message);
     }
   };
 
   const roomAt = (p: FloorPoint) => fp.rooms.find((r) => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h)?.label;
   const canvasRatio = fp.mode === "upload" ? ratio : 1.4;
 
-  if (!isNew && isLoading) return <Screen><Header title="Planta" back /></Screen>;
+  if (!isNew && isLoading) return <Screen><Header title={tr("Planta")} back /></Screen>;
 
   return (
     <Screen>
       <Header
         title={fp.name || "Nova planta"}
-        subtitle={`${fp.mode === "upload" ? "Imagem" : "Desenho"} · ${fp.points.length} pontos${fp.client_name ? ` · ${fp.client_name}` : ""}`}
+        subtitle={`${fp.mode === "upload" ? tr("Imagem") : tr("Desenho")} · ${fp.points.length} pontos${fp.client_name ? ` · ${fp.client_name}` : ""}`}
         back
         right={
           <Row gap={0}>
@@ -168,11 +169,11 @@ export default function FloorPlanScreen() {
       />
       <ScrollView contentContainerStyle={{ padding: 12, gap: 12, paddingBottom: 24 }}>
         <Row gap={8} style={{ flexWrap: "wrap" }}>
-          <Button small title={tool === "point" ? "Toque na planta..." : "Adicionar ponto"} icon="add-circle-outline" variant={tool === "point" ? "primary" : "secondary"} onPress={() => setTool(tool === "point" ? "none" : "point")} testID="tool-point" disabled={fp.mode === "upload" && !fp.image_path} />
+          <Button small title={tool === "point" ? tr("Toque na planta...") : tr("Adicionar ponto")} icon="add-circle-outline" variant={tool === "point" ? "primary" : "secondary"} onPress={() => setTool(tool === "point" ? "none" : "point")} testID="tool-point" disabled={fp.mode === "upload" && !fp.image_path} />
           {fp.mode === "draw" ? (
-            <Button small title={tool === "room" ? "Toque para posicionar..." : "Adicionar cômodo"} icon="square-outline" variant={tool === "room" ? "primary" : "secondary"} onPress={() => setTool(tool === "room" ? "none" : "room")} testID="tool-room" />
+            <Button small title={tool === "room" ? tr("Toque para posicionar...") : tr("Adicionar cômodo")} icon="square-outline" variant={tool === "room" ? "primary" : "secondary"} onPress={() => setTool(tool === "room" ? "none" : "room")} testID="tool-room" />
           ) : (
-            <Button small title={fp.image_path ? "Trocar imagem" : "Enviar imagem"} icon="image-outline" variant="secondary" onPress={pickImage} loading={uploading} testID="fp-upload" />
+            <Button small title={fp.image_path ? tr("Trocar imagem") : tr("Enviar imagem")} icon="image-outline" variant="secondary" onPress={pickImage} loading={uploading} testID="fp-upload" />
           )}
         </Row>
 
@@ -194,7 +195,7 @@ export default function FloorPlanScreen() {
               ) : (
                 <View style={styles.placeholder}>
                   <Icon name="image-outline" size={36} color={colors.muted} />
-                  <Text style={styles.placeholderText}>Envie a imagem da planta baixa</Text>
+                  <Text style={styles.placeholderText}>{tr("Envie a imagem da planta baixa")}</Text>
                 </View>
               )
             ) : (
@@ -243,13 +244,13 @@ export default function FloorPlanScreen() {
           {POINT_KINDS.map((k) => (
             <Row key={k.value} gap={4}>
               <Icon name={k.icon as any} size={12} color={colors[k.color]} />
-              <Text style={styles.legend}>{k.label}</Text>
+              <Text style={styles.legend}>{tr(k.label)}</Text>
             </Row>
           ))}
         </Row>
 
         <Text style={styles.sectionTitle}>PONTOS DE REDE ({fp.points.length})</Text>
-        {fp.points.length === 0 ? <Text style={styles.legend}>Use "Adicionar ponto" e toque no local desejado da planta.</Text> : null}
+        {fp.points.length === 0 ? <Text style={styles.legend}>{tr("Use \"Adicionar ponto\" e toque no local desejado da planta.")}</Text> : null}
         {fp.points.map((p) => {
           const k = KIND_MAP[p.kind] ?? KIND_MAP.network;
           return (
@@ -258,7 +259,7 @@ export default function FloorPlanScreen() {
                 <Icon name={k.icon as any} size={18} color={colors[k.color]} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.pointTitle}>
-                    {p.label} · {k.label}
+                    {p.label} · {tr(k.label)}
                   </Text>
                   <Text style={styles.legend}>{[p.room || roomAt(p), p.detail].filter(Boolean).join(" · ") || `${p.x}% , ${p.y}%`}</Text>
                 </View>
@@ -270,16 +271,16 @@ export default function FloorPlanScreen() {
       </ScrollView>
 
       <StickyBar>
-        <Button title={dirty || isNew ? "Salvar" : "Salvo"} icon="save-outline" onPress={doSave} loading={save.isPending} disabled={!dirty && !isNew} style={{ flex: 1 }} testID="fp-save" />
-        <Button title="Imprimir" icon="print-outline" variant="secondary" onPress={() => exportPdf(false)} testID="fp-print" />
-        <Button title="PDF" icon="download-outline" variant="secondary" onPress={() => exportPdf(true)} testID="fp-pdf" />
+        <Button title={dirty || isNew ? tr("Salvar") : tr("Salvo")} icon="save-outline" onPress={doSave} loading={save.isPending} disabled={!dirty && !isNew} style={{ flex: 1 }} testID="fp-save" />
+        <Button title={tr("Imprimir")} icon="print-outline" variant="secondary" onPress={() => exportPdf(false)} testID="fp-print" />
+        <Button title={tr("PDF")} icon="download-outline" variant="secondary" onPress={() => exportPdf(true)} testID="fp-pdf" />
       </StickyBar>
 
-      <Sheet visible={settings} onClose={() => setSettings(false)} title="Planta baixa" footer={<Button title="Aplicar" onPress={() => (fp.name.trim() ? setSettings(false) : notify("Informe o nome"))} testID="fp-settings-apply" />}>
-        <Input label="Nome *" value={fp.name} onChangeText={(v) => patch({ name: v })} placeholder="Escritório - 1º andar" testID="fp-name" />
-        <Select label="Cliente" value={fp.client_id ?? ""} options={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))} onChange={(v) => patch({ client_id: v, client_name: clients.data?.find((c) => c.id === v)?.name ?? "" })} testID="fp-client" />
+      <Sheet visible={settings} onClose={() => setSettings(false)} title={tr("Planta baixa")} footer={<Button title={tr("Aplicar")} onPress={() => (fp.name.trim() ? setSettings(false) : notify(tr("Informe o nome")))} testID="fp-settings-apply" />}>
+        <Input label={tr("Nome *")} value={fp.name} onChangeText={(v) => patch({ name: v })} placeholder={tr("Escritório - 1º andar")} testID="fp-name" />
+        <Select label={tr("Cliente")} value={fp.client_id ?? ""} options={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))} onChange={(v) => patch({ client_id: v, client_name: clients.data?.find((c) => c.id === v)?.name ?? "" })} testID="fp-client" />
         <Select
-          label="Modo"
+          label={tr("Modo")}
           value={fp.mode}
           options={[
             { value: "upload", label: "Enviar imagem da planta", hint: "Foto ou arquivo da planta baixa" },
@@ -293,24 +294,24 @@ export default function FloorPlanScreen() {
       <Sheet
         visible={!!pointSel}
         onClose={() => setPointSel(null)}
-        title="Ponto de rede"
+        title={tr("Ponto de rede")}
         footer={
           <Row gap={8}>
-            <Button title="Remover" variant="danger" testID="point-remove" onPress={() => { if (pointSel) patch({ points: fp.points.filter((p) => p.id !== pointSel.id) }); setPointSel(null); }} />
-            <Button title="Salvar" style={{ flex: 1 }} onPress={savePoint} testID="point-save" />
+            <Button title={tr("Remover")} variant="danger" testID="point-remove" onPress={() => { if (pointSel) patch({ points: fp.points.filter((p) => p.id !== pointSel.id) }); setPointSel(null); }} />
+            <Button title={tr("Salvar")} style={{ flex: 1 }} onPress={savePoint} testID="point-save" />
           </Row>
         }
       >
         {pointSel ? (
           <>
             <Row gap={8}>
-              <Input style={{ flex: 1 }} label="Identificação" value={pointSel.label} onChangeText={(v) => setPointSel({ ...pointSel, label: v })} testID="point-label" />
+              <Input style={{ flex: 1 }} label={tr("Identificação")} value={pointSel.label} onChangeText={(v) => setPointSel({ ...pointSel, label: v })} testID="point-label" />
               <View style={{ flex: 1.4 }}>
-                <Select label="Tipo" value={pointSel.kind} options={POINT_KINDS} onChange={(v) => setPointSel({ ...pointSel, kind: v })} testID="point-kind" />
+                <Select label={tr("Tipo")} value={pointSel.kind} options={POINT_KINDS} onChange={(v) => setPointSel({ ...pointSel, kind: v })} testID="point-kind" />
               </View>
             </Row>
-            <Input label="Sala / Local" value={pointSel.room} onChangeText={(v) => setPointSel({ ...pointSel, room: v })} placeholder={roomAt(pointSel) ?? "Recepção"} />
-            <Input label="Detalhes" value={pointSel.detail} onChangeText={(v) => setPointSel({ ...pointSel, detail: v })} placeholder="Patch panel 1 porta 12 · Cat6" />
+            <Input label={tr("Sala / Local")} value={pointSel.room} onChangeText={(v) => setPointSel({ ...pointSel, room: v })} placeholder={roomAt(pointSel) ?? "Recepção"} />
+            <Input label={tr("Detalhes")} value={pointSel.detail} onChangeText={(v) => setPointSel({ ...pointSel, detail: v })} placeholder="Patch panel 1 porta 12 · Cat6" />
           </>
         ) : null}
       </Sheet>
@@ -318,24 +319,24 @@ export default function FloorPlanScreen() {
       <Sheet
         visible={!!roomSel}
         onClose={() => setRoomSel(null)}
-        title="Cômodo"
+        title={tr("Cômodo")}
         footer={
           <Row gap={8}>
-            <Button title="Remover" variant="danger" testID="room-remove" onPress={() => { if (roomSel) patch({ rooms: fp.rooms.filter((r) => r.id !== roomSel.id) }); setRoomSel(null); }} />
-            <Button title="Salvar" style={{ flex: 1 }} onPress={saveRoom} testID="room-save" />
+            <Button title={tr("Remover")} variant="danger" testID="room-remove" onPress={() => { if (roomSel) patch({ rooms: fp.rooms.filter((r) => r.id !== roomSel.id) }); setRoomSel(null); }} />
+            <Button title={tr("Salvar")} style={{ flex: 1 }} onPress={saveRoom} testID="room-save" />
           </Row>
         }
       >
         {roomSel ? (
           <>
-            <Input label="Nome" value={roomSel.label} onChangeText={(v) => setRoomSel({ ...roomSel, label: v })} testID="room-label" />
+            <Input label={tr("Nome")} value={roomSel.label} onChangeText={(v) => setRoomSel({ ...roomSel, label: v })} testID="room-label" />
             <Row gap={8}>
-              <Input style={{ flex: 1 }} label="Largura (%)" value={String(roomSel.w)} onChangeText={(v) => setRoomSel({ ...roomSel, w: Math.max(2, Math.min(100, Number(v) || 0)) })} keyboardType="number-pad" />
-              <Input style={{ flex: 1 }} label="Altura (%)" value={String(roomSel.h)} onChangeText={(v) => setRoomSel({ ...roomSel, h: Math.max(2, Math.min(100, Number(v) || 0)) })} keyboardType="number-pad" />
+              <Input style={{ flex: 1 }} label={tr("Largura (%)")} value={String(roomSel.w)} onChangeText={(v) => setRoomSel({ ...roomSel, w: Math.max(2, Math.min(100, Number(v) || 0)) })} keyboardType="number-pad" />
+              <Input style={{ flex: 1 }} label={tr("Altura (%)")} value={String(roomSel.h)} onChangeText={(v) => setRoomSel({ ...roomSel, h: Math.max(2, Math.min(100, Number(v) || 0)) })} keyboardType="number-pad" />
             </Row>
             <Row gap={8}>
-              <Input style={{ flex: 1 }} label="Posição X (%)" value={String(roomSel.x)} onChangeText={(v) => setRoomSel({ ...roomSel, x: Math.max(0, Math.min(98, Number(v) || 0)) })} keyboardType="number-pad" />
-              <Input style={{ flex: 1 }} label="Posição Y (%)" value={String(roomSel.y)} onChangeText={(v) => setRoomSel({ ...roomSel, y: Math.max(0, Math.min(98, Number(v) || 0)) })} keyboardType="number-pad" />
+              <Input style={{ flex: 1 }} label={tr("Posição X (%)")} value={String(roomSel.x)} onChangeText={(v) => setRoomSel({ ...roomSel, x: Math.max(0, Math.min(98, Number(v) || 0)) })} keyboardType="number-pad" />
+              <Input style={{ flex: 1 }} label={tr("Posição Y (%)")} value={String(roomSel.y)} onChangeText={(v) => setRoomSel({ ...roomSel, y: Math.max(0, Math.min(98, Number(v) || 0)) })} keyboardType="number-pad" />
             </Row>
           </>
         ) : null}

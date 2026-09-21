@@ -12,6 +12,7 @@ import { Client, Rack, RackSlot, Server } from "@/src/types";
 import { useSettings } from "@/src/brand";
 import { serverUnstable } from "@/src/components/brazil-map";
 import type { LedStatus } from "@/src/components/rack-face";
+import { tr } from "@/src/i18n";
 
 const ROW_H = 30;
 const EMPTY: Rack = { id: "", name: "", client_id: "", client_name: "", size_u: 48, location: "", slots: [] };
@@ -92,7 +93,7 @@ export default function RackBuilder() {
       const alt = { ...candidate, u_start: candidate.u_start - candidate.u_size + 1 };
       if (slotFits(rack.slots, alt, rack.size_u, picker.idx)) candidate = alt;
       else {
-        notify("Espaço insuficiente", `Não há ${candidate.u_size}U livres nessa posição.`);
+        notify(tr("Espaço insuficiente"), `Não há ${candidate.u_size}U livres nessa posição.`);
         return;
       }
     }
@@ -112,7 +113,7 @@ export default function RackBuilder() {
   const doSave = async () => {
     if (!rack.name.trim()) {
       setSettings(true);
-      notify("Informe o nome do rack");
+      notify(tr("Informe o nome do rack"));
       return;
     }
     try {
@@ -123,12 +124,12 @@ export default function RackBuilder() {
       setSettings(false);
       if (isNew) router.replace(`/rack/${saved.id}`);
     } catch (e: any) {
-      notify("Erro ao salvar", e?.message);
+      notify(tr("Erro ao salvar"), e?.message);
     }
   };
 
   const doDelete = async () => {
-    if (!(await confirmAsync("Excluir rack", "Esta ação não pode ser desfeita."))) return;
+    if (!(await confirmAsync(tr("Excluir rack"), tr("Esta ação não pode ser desfeita.")))) return;
     await remove.mutateAsync(rack.id);
     router.back();
   };
@@ -139,20 +140,20 @@ export default function RackBuilder() {
       if (share) await sharePdf(html, `${rack.name || "rack"}.pdf`);
       else await printHtml(html);
     } catch (e: any) {
-      notify("Falha ao gerar PDF", e?.message);
+      notify(tr("Falha ao gerar PDF"), e?.message);
     }
   };
 
   const changeSize = (size: number) => {
     const overflow = rack.slots.some((s) => slotRange(s).top > size);
     if (overflow) {
-      notify("Rack ocupado acima do novo tamanho", "Remova os equipamentos das posições superiores antes de reduzir.");
+      notify(tr("Rack ocupado acima do novo tamanho"), tr("Remova os equipamentos das posições superiores antes de reduzir."));
       return;
     }
     patch({ size_u: size });
   };
 
-  if (!isNew && isLoading) return <Screen><Header title="Rack" back /></Screen>;
+  if (!isNew && isLoading) return <Screen><Header title={tr("Rack")} back /></Screen>;
 
   return (
     <Screen>
@@ -197,7 +198,7 @@ export default function RackBuilder() {
                 </View>
                 <View style={styles.emptySlot}>
                   <View style={styles.hole} />
-                  <Text style={styles.emptyText}>1U livre</Text>
+                  <Text style={styles.emptyText}>{tr("1U livre")}</Text>
                   <View style={styles.hole} />
                 </View>
                 <View style={styles.rail}>
@@ -210,24 +211,24 @@ export default function RackBuilder() {
       </View>
 
       <StickyBar>
-        <Button title={dirty || isNew ? "Salvar" : "Salvo"} icon="save-outline" onPress={doSave} loading={save.isPending} style={{ flex: 1 }} disabled={!dirty && !isNew} testID="rack-save" />
-        <Button title="Imprimir" icon="print-outline" variant="secondary" onPress={() => exportPdf(false)} testID="rack-print" />
-        {canSharePdf ? <Button title="PDF" icon="share-outline" variant="secondary" onPress={() => exportPdf(true)} /> : null}
+        <Button title={dirty || isNew ? tr("Salvar") : tr("Salvo")} icon="save-outline" onPress={doSave} loading={save.isPending} style={{ flex: 1 }} disabled={!dirty && !isNew} testID="rack-save" />
+        <Button title={tr("Imprimir")} icon="print-outline" variant="secondary" onPress={() => exportPdf(false)} testID="rack-print" />
+        {canSharePdf ? <Button title={tr("PDF")} icon="share-outline" variant="secondary" onPress={() => exportPdf(true)} /> : null}
       </StickyBar>
 
       {/* Settings sheet */}
-      <Sheet visible={settings} onClose={() => setSettings(false)} title="Configurações do rack" footer={<Button title="Aplicar" onPress={() => (rack.name.trim() ? setSettings(false) : notify("Informe o nome do rack"))} testID="rack-settings-apply" />}>
-        <Input label="Nome *" value={rack.name} onChangeText={(v) => patch({ name: v })} placeholder="Rack principal - CPD" testID="rack-name" />
+      <Sheet visible={settings} onClose={() => setSettings(false)} title={tr("Configurações do rack")} footer={<Button title={tr("Aplicar")} onPress={() => (rack.name.trim() ? setSettings(false) : notify(tr("Informe o nome do rack")))} testID="rack-settings-apply" />}>
+        <Input label={tr("Nome *")} value={rack.name} onChangeText={(v) => patch({ name: v })} placeholder={tr("Rack principal - CPD")} testID="rack-name" />
         <Select
-          label="Cliente"
+          label={tr("Cliente")}
           value={rack.client_id ?? ""}
           options={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
           onChange={(v) => patch({ client_id: v, client_name: clients.data?.find((c) => c.id === v)?.name ?? "" })}
           testID="rack-client"
         />
-        <Input label="Localização" value={rack.location} onChangeText={(v) => patch({ location: v })} placeholder="Sala técnica, 2º andar" />
+        <Input label={tr("Localização")} value={rack.location} onChangeText={(v) => patch({ location: v })} placeholder={tr("Sala técnica, 2º andar")} />
         <Select
-          label="Tamanho (U)"
+          label={tr("Tamanho (U)")}
           value={String(rack.size_u)}
           options={RACK_SIZES.map((s) => ({ value: String(s), label: `${s}U` }))}
           onChange={(v) => changeSize(Number(v))}
@@ -242,14 +243,14 @@ export default function RackBuilder() {
         title={picker?.idx === -1 ? `Adicionar na posição ${picker?.u}U` : `Editar equipamento`}
         footer={
           <Row gap={8}>
-            {picker && picker.idx !== -1 ? <Button title="Remover" variant="danger" onPress={removeSlot} testID="slot-remove" /> : null}
-            <Button title="Confirmar" onPress={confirmSlot} style={{ flex: 1 }} testID="slot-confirm" />
+            {picker && picker.idx !== -1 ? <Button title={tr("Remover")} variant="danger" onPress={removeSlot} testID="slot-remove" /> : null}
+            <Button title={tr("Confirmar")} onPress={confirmSlot} style={{ flex: 1 }} testID="slot-confirm" />
           </Row>
         }
       >
         {picker ? (
           <>
-            <Text style={styles.sheetLabel}>EQUIPAMENTO</Text>
+            <Text style={styles.sheetLabel}>{tr("EQUIPAMENTO")}</Text>
             <View style={styles.kindGrid}>
               {RACK_CATALOG.map((k) => {
                 const active = k.kind === picker.slot.kind;
@@ -257,7 +258,7 @@ export default function RackBuilder() {
                   <Pressable key={k.kind} testID={`kind-${k.kind}`} onPress={() => pickKind(k.kind)} style={[styles.kind, active && styles.kindActive]}>
                     <Icon name={k.icon as any} size={18} color={active ? colors.brandPrimary : colors[k.colorKey]} />
                     <Text style={[styles.kindText, active && { color: colors.onBrandTertiary }]} numberOfLines={2}>
-                      {k.label}
+                      {tr(k.label)}
                     </Text>
                     <Text style={styles.kindSize}>{k.size}U</Text>
                   </Pressable>
@@ -265,10 +266,10 @@ export default function RackBuilder() {
               })}
             </View>
             <Row gap={8}>
-              <Input style={{ flex: 1 }} label="Identificação" value={picker.slot.label} onChangeText={(v) => setPicker({ ...picker, slot: { ...picker.slot, label: v } })} placeholder="SW-CORE-01" testID="slot-label" />
+              <Input style={{ flex: 1 }} label={tr("Identificação")} value={picker.slot.label} onChangeText={(v) => setPicker({ ...picker, slot: { ...picker.slot, label: v } })} placeholder="SW-CORE-01" testID="slot-label" />
               <View style={{ width: 120 }}>
                 <Select
-                  label="Altura"
+                  label={tr("Altura")}
                   value={String(picker.slot.u_size)}
                   options={[1, 2, 3, 4, 5, 6].map((n) => ({ value: String(n), label: `${n}U` }))}
                   onChange={(v) => setPicker({ ...picker, slot: { ...picker.slot, u_size: Number(v) } })}
@@ -276,9 +277,9 @@ export default function RackBuilder() {
                 />
               </View>
             </Row>
-            <Input label="Detalhes" value={picker.slot.detail} onChangeText={(v) => setPicker({ ...picker, slot: { ...picker.slot, detail: v } })} placeholder="Modelo, VLANs, observações" />
+            <Input label={tr("Detalhes")} value={picker.slot.detail} onChangeText={(v) => setPicker({ ...picker, slot: { ...picker.slot, detail: v } })} placeholder={tr("Modelo, VLANs, observações")} />
             <Select
-              label="Vincular a servidor monitorado (LED de status)"
+              label={tr("Vincular a servidor monitorado (LED de status)")}
               value={picker.slot.server_id ?? ""}
               options={[{ value: "", label: "Sem vínculo (LED verde padrão)" }, ...(servers.data ?? []).map((sv) => ({ value: sv.id, label: sv.name, hint: `${sv.status}${sv.latency_ms != null ? ` · ${sv.latency_ms} ms` : ""}` }))]}
               onChange={(v) => setPicker({ ...picker, slot: { ...picker.slot, server_id: v } })}

@@ -7,6 +7,7 @@ import { api } from "@/src/api";
 import { Button, Header, Icon, Input, Row, Screen } from "@/src/components/ui";
 import type { Device } from "@/src/devices";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
+import { tr } from "@/src/i18n";
 
 export default function ScanScreen() {
   const styles = useStyles();
@@ -57,12 +58,12 @@ export default function ScanScreen() {
     return (
       <View style={styles.permBox}>
         <Icon name="camera-outline" size={40} color={colors.brandPrimary} />
-        <Text style={styles.permTitle}>Leitura de QR Code</Text>
-        <Text style={styles.permText}>Usamos a câmera apenas para ler a etiqueta do dispositivo e abrir a ficha com o histórico de manutenções.</Text>
+        <Text style={styles.permTitle}>{tr("Leitura de QR Code")}</Text>
+        <Text style={styles.permText}>{tr("Usamos a câmera apenas para ler a etiqueta do dispositivo e abrir a ficha com o histórico de manutenções.")}</Text>
         {permission.canAskAgain || Platform.OS === "web" ? (
-          <Button title="Permitir câmera" icon="camera-outline" onPress={askPermission} testID="allow-camera" />
+          <Button title={tr("Permitir câmera")} icon="camera-outline" onPress={askPermission} testID="allow-camera" />
         ) : (
-          <Button title="Abrir configurações" icon="settings-outline" variant="secondary" onPress={() => Linking.openSettings()} testID="open-settings" />
+          <Button title={tr("Abrir configurações")} icon="settings-outline" variant="secondary" onPress={() => Linking.openSettings()} testID="open-settings" />
         )}
       </View>
     );
@@ -70,13 +71,13 @@ export default function ScanScreen() {
 
   return (
     <Screen>
-      <Header title="Ler QR Code" subtitle="Aponte para a etiqueta do dispositivo" back />
+      <Header title={tr("Ler QR Code")} subtitle={tr("Aponte para a etiqueta do dispositivo")} back />
       <View style={{ flex: 1, padding: 16, gap: 12 }}>
         {renderCamera()}
-        <Text style={styles.or}>OU DIGITE O CÓDIGO</Text>
+        <Text style={styles.or}>{tr("OU DIGITE O CÓDIGO")}</Text>
         <Row gap={8}>
-          <Input style={{ flex: 1 }} value={code} onChangeText={setCode} placeholder="Patrimônio ou nº de série" autoCapitalize="characters" onSubmitEditing={() => lookup(code)} testID="scan-code" />
-          <Button title="Buscar" icon="search-outline" onPress={() => lookup(code)} loading={busy} testID="scan-search" />
+          <Input style={{ flex: 1 }} value={code} onChangeText={setCode} placeholder={tr("Patrimônio ou nº de série")} autoCapitalize="characters" onSubmitEditing={() => lookup(code)} testID="scan-code" />
+          <Button title={tr("Buscar")} icon="search-outline" onPress={() => lookup(code)} loading={busy} testID="scan-search" />
         </Row>
         {error ? (
           <Text style={styles.error} testID="scan-error">

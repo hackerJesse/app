@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@react-native-vector-icons/ionicons";
 
+import { tr } from "@/src/i18n";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -273,7 +274,7 @@ export function Segmented<T extends string>({
         const active = o.value === value;
         return (
           <Pressable key={o.value} testID={`segment-${o.value}`} onPress={() => onChange(o.value)} style={[styles.segment, active && styles.segmentActive]}>
-            <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{o.label}</Text>
+            <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{tr(o.label)}</Text>
           </Pressable>
         );
       })}
@@ -345,7 +346,7 @@ export function Select<T extends string>({
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <Pressable testID={testID} onPress={() => setOpen(true)} style={[styles.input, { flexDirection: "row", alignItems: "center" }]}>
         <Text style={{ flex: 1, color: current ? colors.onSurface : colors.muted, fontFamily: fonts.text, fontSize: 14 }}>
-          {current?.label ?? placeholder}
+          {current ? tr(current.label) : placeholder}
         </Text>
         <Icon name="chevron-down" size={16} color={colors.muted} />
       </Pressable>
@@ -365,7 +366,7 @@ export function Select<T extends string>({
             style={[styles.option, o.value === value && styles.optionActive]}
           >
             <View style={{ flex: 1 }}>
-              <Text style={styles.optionText}>{o.label}</Text>
+              <Text style={styles.optionText}>{tr(o.label)}</Text>
               {o.hint ? <Text style={styles.optionHint}>{o.hint}</Text> : null}
             </View>
             {o.value === value ? <Icon name="checkmark" size={18} color={colors.brandPrimary} /> : null}

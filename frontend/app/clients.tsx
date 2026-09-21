@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { Button, Card, Empty, Fab, Header, Icon, Input, Loading, Screen } from "@/src/components/ui";
 import { useList } from "@/src/hooks";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
-import { useT } from "@/src/i18n";
+import { useT, tr } from "@/src/i18n";
 import { Client } from "@/src/types";
 
 export default function ClientsScreen() {
@@ -24,7 +24,7 @@ export default function ClientsScreen() {
     <Screen>
       <Header title={t("clients")} subtitle={`${clients.data?.length ?? 0} cadastrados`} back />
       <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
-        <Input value={search} onChangeText={setSearch} placeholder="Buscar cliente..." testID="client-search" />
+        <Input value={search} onChangeText={setSearch} placeholder={tr("Buscar cliente...")} testID="client-search" />
       </View>
       {clients.isLoading ? (
         <Loading />
@@ -38,9 +38,9 @@ export default function ClientsScreen() {
           ListEmptyComponent={
             <Empty
               icon="people-outline"
-              title="Nenhum cliente"
-              hint="Cadastre clientes para vincular orçamentos, racks e topologias."
-              action={<Button title="Novo cliente" onPress={() => router.push("/client/new")} testID="empty-new-client" />}
+              title={tr("Nenhum cliente")}
+              hint={tr("Cadastre clientes para vincular orçamentos, racks e topologias.")}
+              action={<Button title={tr("Novo cliente")} onPress={() => router.push("/client/new")} testID="empty-new-client" />}
             />
           }
           renderItem={({ item: c }) => (

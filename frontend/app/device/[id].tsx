@@ -13,6 +13,7 @@ import { printLabel as printLabelPdf, sharePdf } from "@/src/pdf";
 import { qrPath } from "@/src/qr";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
 import { fmtBRL, fmtDate } from "@/src/types";
+import { tr } from "@/src/i18n";
 
 function nowLocalInput() {
   const d = new Date();
@@ -54,7 +55,7 @@ export default function DeviceDetail() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["maintenances", id] }),
   });
 
-  if (isLoading || !d) return <Screen><Header title="Dispositivo" back /></Screen>;
+  if (isLoading || !d) return <Screen><Header title={tr("Dispositivo")} back /></Screen>;
 
   const kind = DEVICE_KIND_MAP[d.kind] ?? DEVICE_KIND_MAP.outro;
   const pb = preventiveBadge(d);
@@ -69,14 +70,14 @@ export default function DeviceDetail() {
   const saveMaint = async () => {
     if (!sheet) return;
     if (sheet.kind === "corretiva" && !sheet.description?.trim()) {
-      notify("Descreva o que aconteceu");
+      notify(tr("Descreva o que aconteceu"));
       return;
     }
     try {
       await addMaint.mutateAsync({ ...sheet, date: parseLocalInput(dateInput), cost: parseFloat(costInput.replace(",", ".")) || 0 });
       setSheet(null);
     } catch (e: any) {
-      notify("Erro ao registrar", e?.message);
+      notify(tr("Erro ao registrar"), e?.message);
     }
   };
 
@@ -86,12 +87,12 @@ export default function DeviceDetail() {
       if (share) await sharePdf(html, `etiqueta-${d.asset_tag || d.id.slice(0, 8)}.pdf`, true);
       else await printLabelPdf(html);
     } catch (e: any) {
-      notify("Falha ao gerar etiqueta", e?.message);
+      notify(tr("Falha ao gerar etiqueta"), e?.message);
     }
   };
 
   const doDelete = async () => {
-    if (!(await confirmAsync("Excluir dispositivo", `Remover ${d.name} do inventário?`))) return;
+    if (!(await confirmAsync(tr("Excluir dispositivo"), `Remover ${d.name} do inventário?`))) return;
     await remove.mutateAsync(d.id);
     router.back();
   };
@@ -102,7 +103,7 @@ export default function DeviceDetail() {
     <Screen>
       <Header
         title={d.name}
-        subtitle={`${kind.label}${d.asset_tag ? ` · Pat. ${d.asset_tag}` : ""}`}
+        subtitle={`${tr(kind.label)}${d.asset_tag ? ` · Pat. ${d.asset_tag}` : ""}`}
         back
         right={
           <Row gap={0}>
@@ -123,45 +124,45 @@ export default function DeviceDetail() {
           <View style={{ flex: 1, gap: 6 }}>
             <Row gap={6} style={{ flexWrap: "wrap" }}>
               <Badge text={DEVICE_STATUS.find((s) => s.value === d.status)?.label ?? d.status} tone={d.status === "ativo" ? "success" : d.status === "manutencao" ? "warning" : "neutral"} />
-              {pb ? <Badge text={pb.text} tone={pb.tone} /> : <Badge text="Sem preventiva" tone="neutral" />}
+              {pb ? <Badge text={pb.text} tone={pb.tone} /> : <Badge text={tr("Sem preventiva")} tone="neutral" />}
             </Row>
-            <Info label="Setor" value={d.sector} />
-            <Info label="Nº de série" value={d.serial} />
-            <Info label="Marca / modelo" value={[d.brand, d.model].filter(Boolean).join(" ")} />
-            <Info label="Cliente" value={d.client_name} />
+            <Info label={tr("Setor")} value={d.sector} />
+            <Info label={tr("Nº de série")} value={d.serial} />
+            <Info label={tr("Marca / modelo")} value={[d.brand, d.model].filter(Boolean).join(" ")} />
+            <Info label={tr("Cliente")} value={d.client_name} />
           </View>
         </Row>
 
         <Row gap={8}>
-          <Button title="Etiqueta" icon="pricetag-outline" onPress={() => printLabel(false)} style={{ flex: 1 }} testID="print-label" />
-          <Button title="PDF" icon="download-outline" variant="secondary" onPress={() => printLabel(true)} testID="label-pdf" />
-          <Button title="QR" icon="qr-code-outline" variant="secondary" onPress={() => setQrOpen(true)} testID="show-qr" />
+          <Button title={tr("Etiqueta")} icon="pricetag-outline" onPress={() => printLabel(false)} style={{ flex: 1 }} testID="print-label" />
+          <Button title={tr("PDF")} icon="download-outline" variant="secondary" onPress={() => printLabel(true)} testID="label-pdf" />
+          <Button title={tr("QR")} icon="qr-code-outline" variant="secondary" onPress={() => setQrOpen(true)} testID="show-qr" />
         </Row>
 
-        <Text style={styles.section}>CONFIGURAÇÃO</Text>
+        <Text style={styles.section}>{tr("CONFIGURAÇÃO")}</Text>
         <Card style={{ gap: 6 }}>
-          {specs.length === 0 ? <Text style={styles.hint}>Nenhuma configuração informada.</Text> : null}
+          {specs.length === 0 ? <Text style={styles.hint}>{tr("Nenhuma configuração informada.")}</Text> : null}
           {specs.map((f) => (
             <Row key={f.key}>
-              <Text style={styles.specLabel}>{f.label}</Text>
+              <Text style={styles.specLabel}>{tr(f.label)}</Text>
               <Text style={styles.specValue}>{d.specs[f.key]}</Text>
             </Row>
           ))}
           {d.notes ? <Text style={[styles.hint, { marginTop: 4 }]}>{d.notes}</Text> : null}
         </Card>
 
-        <Text style={styles.section}>MANUTENÇÃO PREVENTIVA</Text>
+        <Text style={styles.section}>{tr("MANUTENÇÃO PREVENTIVA")}</Text>
         <Card style={{ gap: 4 }}>
           <Row>
-            <Text style={styles.specLabel}>Periodicidade</Text>
-            <Text style={styles.specValue}>{d.preventive_months ? `a cada ${d.preventive_months} ${d.preventive_months === 1 ? "mês" : "meses"}` : "não definida"}</Text>
+            <Text style={styles.specLabel}>{tr("Periodicidade")}</Text>
+            <Text style={styles.specValue}>{d.preventive_months ? `a cada ${d.preventive_months} ${d.preventive_months === 1 ? tr("mês") : tr("meses")}` : "não definida"}</Text>
           </Row>
           <Row>
-            <Text style={styles.specLabel}>Última realizada</Text>
+            <Text style={styles.specLabel}>{tr("Última realizada")}</Text>
             <Text style={styles.specValue}>{d.last_preventive ? fmtDate(d.last_preventive) : "nunca (conta desde o cadastro)"}</Text>
           </Row>
           <Row>
-            <Text style={styles.specLabel}>Próxima</Text>
+            <Text style={styles.specLabel}>{tr("Próxima")}</Text>
             <Text style={[styles.specValue, d.preventive_state === "vencida" && { color: colors.error }]}>{d.next_preventive ? fmtDate(d.next_preventive) : "—"}</Text>
           </Row>
         </Card>
@@ -169,7 +170,7 @@ export default function DeviceDetail() {
         <Row style={{ justifyContent: "space-between" }}>
           <Text style={styles.section}>HISTÓRICO ({maint.data?.length ?? 0})</Text>
         </Row>
-        {(maint.data ?? []).length === 0 ? <Text style={styles.hint}>Nenhuma manutenção registrada. Use os botões abaixo para registrar.</Text> : null}
+        {(maint.data ?? []).length === 0 ? <Text style={styles.hint}>{tr("Nenhuma manutenção registrada. Use os botões abaixo para registrar.")}</Text> : null}
         {(maint.data ?? []).map((m) => (
           <Card key={m.id} testID={`maint-${m.id}`}>
             <Row style={{ alignItems: "flex-start" }}>
@@ -182,33 +183,33 @@ export default function DeviceDetail() {
                 <Text style={styles.maintDesc}>{m.description || (m.kind === "preventiva" ? "Preventiva realizada" : "—")}</Text>
                 <Text style={styles.hint}>{[m.technician && `Téc.: ${m.technician}`, m.parts && `Peças: ${m.parts}`, m.cost ? `Custo: ${fmtBRL(m.cost)}` : ""].filter(Boolean).join(" · ")}</Text>
               </View>
-              <IconButton name="close" size={16} color={colors.muted} onPress={async () => (await confirmAsync("Remover registro", "Excluir este registro de manutenção?")) && delMaint.mutate(m.id)} />
+              <IconButton name="close" size={16} color={colors.muted} onPress={async () => (await confirmAsync(tr("Remover registro"), tr("Excluir este registro de manutenção?"))) && delMaint.mutate(m.id)} />
             </Row>
           </Card>
         ))}
       </ScrollView>
 
       <StickyBar>
-        <Button title="Preventiva feita" icon="checkmark-done-outline" variant="secondary" onPress={() => openMaint("preventiva")} style={{ flex: 1 }} testID="add-preventive" />
-        <Button title="Corretiva" icon="build-outline" onPress={() => openMaint("corretiva")} style={{ flex: 1 }} testID="add-corrective" />
+        <Button title={tr("Preventiva feita")} icon="checkmark-done-outline" variant="secondary" onPress={() => openMaint("preventiva")} style={{ flex: 1 }} testID="add-preventive" />
+        <Button title={tr("Corretiva")} icon="build-outline" onPress={() => openMaint("corretiva")} style={{ flex: 1 }} testID="add-corrective" />
       </StickyBar>
 
-      <Sheet visible={!!sheet} onClose={() => setSheet(null)} title={sheet?.kind === "preventiva" ? "Registrar preventiva" : "Registrar corretiva"} footer={<Button title="Registrar" onPress={saveMaint} loading={addMaint.isPending} testID="maint-save" />}>
+      <Sheet visible={!!sheet} onClose={() => setSheet(null)} title={sheet?.kind === "preventiva" ? tr("Registrar preventiva") : tr("Registrar corretiva")} footer={<Button title={tr("Registrar")} onPress={saveMaint} loading={addMaint.isPending} testID="maint-save" />}>
         {sheet ? (
           <>
-            <Select label="Tipo" value={sheet.kind ?? "corretiva"} options={[{ value: "preventiva", label: "Preventiva (limpeza / revisão)" }, { value: "corretiva", label: "Corretiva (defeito / reparo)" }]} onChange={(v) => setSheet({ ...sheet, kind: v as any })} />
-            <Input label="Data e hora" value={dateInput} onChangeText={setDateInput} placeholder="dd/mm/aaaa hh:mm" testID="maint-date" />
-            <Input label={sheet.kind === "preventiva" ? "O que foi feito" : "O que aconteceu / o que foi feito *"} value={sheet.description} onChangeText={(v) => setSheet({ ...sheet, description: v })} multiline placeholder={sheet.kind === "preventiva" ? "Limpeza interna completa, troca de pasta térmica..." : "Fonte queimou; substituída por fonte 500W..."} testID="maint-desc" />
+            <Select label={tr("Tipo")} value={sheet.kind ?? "corretiva"} options={[{ value: "preventiva", label: "Preventiva (limpeza / revisão)" }, { value: "corretiva", label: "Corretiva (defeito / reparo)" }]} onChange={(v) => setSheet({ ...sheet, kind: v as any })} />
+            <Input label={tr("Data e hora")} value={dateInput} onChangeText={setDateInput} placeholder={tr("dd/mm/aaaa hh:mm")} testID="maint-date" />
+            <Input label={sheet.kind === "preventiva" ? tr("O que foi feito") : tr("O que aconteceu / o que foi feito *")} value={sheet.description} onChangeText={(v) => setSheet({ ...sheet, description: v })} multiline placeholder={sheet.kind === "preventiva" ? tr("Limpeza interna completa, troca de pasta térmica...") : tr("Fonte queimou; substituída por fonte 500W...")} testID="maint-desc" />
             <Row gap={8}>
-              <Input style={{ flex: 1 }} label="Técnico" value={sheet.technician} onChangeText={(v) => setSheet({ ...sheet, technician: v })} placeholder="Nome" />
-              <Input style={{ flex: 1 }} label="Custo (R$)" value={costInput} onChangeText={setCostInput} keyboardType="decimal-pad" />
+              <Input style={{ flex: 1 }} label={tr("Técnico")} value={sheet.technician} onChangeText={(v) => setSheet({ ...sheet, technician: v })} placeholder={tr("Nome")} />
+              <Input style={{ flex: 1 }} label={tr("Custo (R$)")} value={costInput} onChangeText={setCostInput} keyboardType="decimal-pad" />
             </Row>
-            <Input label="Peças substituídas" value={sheet.parts} onChangeText={(v) => setSheet({ ...sheet, parts: v })} placeholder="Fonte ATX 500W" />
+            <Input label={tr("Peças substituídas")} value={sheet.parts} onChangeText={(v) => setSheet({ ...sheet, parts: v })} placeholder="Fonte ATX 500W" />
           </>
         ) : null}
       </Sheet>
 
-      <Sheet visible={qrOpen} onClose={() => setQrOpen(false)} title="QR Code do dispositivo">
+      <Sheet visible={qrOpen} onClose={() => setQrOpen(false)} title={tr("QR Code do dispositivo")}>
         <View style={{ alignItems: "center", gap: 8 }}>
           <View style={styles.qrBox} testID="qr-preview">
             <Svg width={220} height={220} viewBox={`0 0 ${qr.size} ${qr.size}`}>
@@ -217,7 +218,7 @@ export default function DeviceDetail() {
             </Svg>
           </View>
           <Text style={styles.hint}>{qrPayload(d)}</Text>
-          <Text style={[styles.hint, { textAlign: "center" }]}>Leia este código pelo app (botão QR na aba Dispositivos) para abrir a ficha e registrar manutenções.</Text>
+          <Text style={[styles.hint, { textAlign: "center" }]}>{tr("Leia este código pelo app (botão QR na aba Dispositivos) para abrir a ficha e registrar manutenções.")}</Text>
         </View>
       </Sheet>
     </Screen>

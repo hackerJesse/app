@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 
+import { PHRASES } from "@/src/phrases";
 import { storage } from "@/src/utils/storage";
 
 export type Lang = "pt" | "en" | "es";
@@ -295,6 +296,17 @@ export function useLanguage(): Lang {
     () => current,
   );
 }
+// Tradução de frases das telas internas: chave = texto em português (fallback = a própria frase).
+const PHRASE_MAP: Record<"en" | "es", Record<string, string>> = { en: {}, es: {} };
+PHRASES.forEach(([pt, en, es]) => {
+  PHRASE_MAP.en[pt] = en;
+  PHRASE_MAP.es[pt] = es;
+});
+export function tr(phrase: string): string {
+  if (current === "pt") return phrase;
+  return PHRASE_MAP[current][phrase] ?? phrase;
+}
+
 export function useT() {
   const lang = useLanguage();
   return (key: TKey) => DICT[lang][key] ?? pt[key] ?? key;

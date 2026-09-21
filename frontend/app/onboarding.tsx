@@ -7,6 +7,7 @@ import { api } from "@/src/api";
 import { User, useAuth } from "@/src/auth";
 import { Badge, Button, Card, Header, Icon, Input, Row, Screen, notify } from "@/src/components/ui";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
+import { tr } from "@/src/i18n";
 
 const CONTRACT = `CONTRATO DE LICENÇA DE USO — N-SECURITY INFRAMANAGER (v1.0)
 
@@ -30,7 +31,7 @@ export default function OnboardingScreen() {
 
   const acceptContract = async () => {
     if (!agree) {
-      notify("Marque a caixa de aceite do contrato");
+      notify(tr("Marque a caixa de aceite do contrato"));
       return;
     }
     setBusy("contract");
@@ -38,7 +39,7 @@ export default function OnboardingScreen() {
       const u = await api<User>("/account/contract", { method: "POST", body: { accept: true, full_name: name, cpf } });
       setUser(u);
     } catch (e: any) {
-      notify("Erro", e?.message);
+      notify(tr("Erro"), e?.message);
     } finally {
       setBusy(null);
     }
@@ -55,7 +56,7 @@ export default function OnboardingScreen() {
         await verify();
       }
     } catch (e: any) {
-      notify("Erro ao iniciar pagamento", e?.message);
+      notify(tr("Erro ao iniciar pagamento"), e?.message);
     } finally {
       setBusy(null);
     }
@@ -66,7 +67,7 @@ export default function OnboardingScreen() {
     try {
       const data = await api<{ user: User }>("/billing/me");
       setUser(data.user);
-      if (!data.user.has_access) notify("Pagamento ainda não confirmado", "Conclua o pagamento e toque em verificar novamente.");
+      if (!data.user.has_access) notify(tr("Pagamento ainda não confirmado"), tr("Conclua o pagamento e toque em verificar novamente."));
     } finally {
       setBusy(null);
     }
@@ -76,59 +77,59 @@ export default function OnboardingScreen() {
 
   return (
     <Screen>
-      <Header title="Ativação da conta" subtitle={user?.email} right={<Button small title="Sair" variant="ghost" onPress={logout} testID="onb-logout" />} />
+      <Header title={tr("Ativação da conta")} subtitle={user?.email} right={<Button small title={tr("Sair")} variant="ghost" onPress={logout} testID="onb-logout" />} />
       <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
         <Row gap={8}>
-          <Badge text={contractDone ? "1 · Contrato aceito" : "1 · Contrato"} tone={contractDone ? "success" : "brand"} />
-          <Badge text={user?.has_access ? "2 · Pago" : "2 · Pagamento"} tone={user?.has_access ? "success" : "neutral"} />
+          <Badge text={contractDone ? tr("1 · Contrato aceito") : tr("1 · Contrato")} tone={contractDone ? "success" : "brand"} />
+          <Badge text={user?.has_access ? tr("2 · Pago") : tr("2 · Pagamento")} tone={user?.has_access ? "success" : "neutral"} />
         </Row>
 
         {!contractDone ? (
           <Card style={{ gap: 10 }}>
-            <Text style={styles.title}>Contrato de assinatura</Text>
+            <Text style={styles.title}>{tr("Contrato de assinatura")}</Text>
             <ScrollView style={styles.contractBox} nestedScrollEnabled>
               <Text style={styles.contract}>{CONTRACT}</Text>
             </ScrollView>
-            <Input label="Nome completo" value={name} onChangeText={setName} testID="onb-name" />
+            <Input label={tr("Nome completo")} value={name} onChangeText={setName} testID="onb-name" />
             <Input label="CPF" value={cpf} onChangeText={setCpf} keyboardType="number-pad" testID="onb-cpf" />
             <Pressable onPress={() => setAgree((a) => !a)} style={styles.check} testID="onb-agree">
               <Icon name={agree ? "checkbox" : "square-outline"} size={22} color={agree ? colors.brandPrimary : colors.muted} />
-              <Text style={styles.checkText}>Li e aceito o contrato. Serão registrados nome, CPF, data/hora e IP do aceite.</Text>
+              <Text style={styles.checkText}>{tr("Li e aceito o contrato. Serão registrados nome, CPF, data/hora e IP do aceite.")}</Text>
             </Pressable>
-            <Button title="Aceitar contrato" icon="checkmark-circle-outline" onPress={acceptContract} loading={busy === "contract"} testID="onb-accept" />
+            <Button title={tr("Aceitar contrato")} icon="checkmark-circle-outline" onPress={acceptContract} loading={busy === "contract"} testID="onb-accept" />
           </Card>
         ) : (
           <>
-            <Text style={styles.title}>Escolha o plano</Text>
+            <Text style={styles.title}>{tr("Escolha o plano")}</Text>
             <Card style={{ gap: 6 }} testID="plan-monthly">
               <Row>
-                <Text style={styles.planName}>Assinatura mensal</Text>
+                <Text style={styles.planName}>{tr("Assinatura mensal")}</Text>
                 <View style={{ flex: 1 }} />
                 <Text style={styles.price}>R$ 25,90</Text>
-                <Text style={styles.per}>/mês por usuário</Text>
+                <Text style={styles.per}>{tr("/mês por usuário")}</Text>
               </Row>
-              <Text style={styles.hint}>Renovação automática · cancele quando quiser · bloqueio automático em caso de não pagamento.</Text>
-              <Button title="Assinar mensal" icon="card-outline" onPress={() => checkout("monthly")} loading={busy === "monthly"} testID="buy-monthly" />
+              <Text style={styles.hint}>{tr("Renovação automática · cancele quando quiser · bloqueio automático em caso de não pagamento.")}</Text>
+              <Button title={tr("Assinar mensal")} icon="card-outline" onPress={() => checkout("monthly")} loading={busy === "monthly"} testID="buy-monthly" />
             </Card>
             <Card style={{ gap: 6, borderColor: colors.brandPrimary }} testID="plan-lifetime">
               <Row>
-                <Text style={styles.planName}>Licença vitalícia ilimitada</Text>
+                <Text style={styles.planName}>{tr("Licença vitalícia ilimitada")}</Text>
                 <View style={{ flex: 1 }} />
                 <Badge text="-R$ 501" tone="success" />
               </Row>
               <Row gap={8}>
                 <Text style={styles.strike}>R$ 1.500,00</Text>
                 <Text style={styles.price}>R$ 999,00</Text>
-                <Text style={styles.per}>à vista</Text>
+                <Text style={styles.per}>{tr("à vista")}</Text>
               </Row>
-              <Text style={styles.hint}>Pagamento único · usuários ilimitados · atualizações por 12 meses e correções sem prazo.</Text>
-              <Button title="Comprar licença vitalícia" icon="ribbon-outline" onPress={() => checkout("lifetime")} loading={busy === "lifetime"} testID="buy-lifetime" />
+              <Text style={styles.hint}>{tr("Pagamento único · usuários ilimitados · atualizações por 12 meses e correções sem prazo.")}</Text>
+              <Button title={tr("Comprar licença vitalícia")} icon="ribbon-outline" onPress={() => checkout("lifetime")} loading={busy === "lifetime"} testID="buy-lifetime" />
             </Card>
-            <Button title="Já paguei — verificar" icon="refresh-outline" variant="secondary" onPress={verify} loading={busy === "verify"} testID="verify-payment" />
-            <Text style={styles.hint}>Pagamento seguro via Stripe (cartão). O acesso é liberado automaticamente após a confirmação.</Text>
+            <Button title={tr("Já paguei — verificar")} icon="refresh-outline" variant="secondary" onPress={verify} loading={busy === "verify"} testID="verify-payment" />
+            <Text style={styles.hint}>{tr("Pagamento seguro via Stripe (cartão). O acesso é liberado automaticamente após a confirmação.")}</Text>
           </>
         )}
-        <Button title="Atualizar status" variant="ghost" onPress={() => refreshUser().then((u) => u?.has_access && router.replace("/(tabs)"))} />
+        <Button title={tr("Atualizar status")} variant="ghost" onPress={() => refreshUser().then((u) => u?.has_access && router.replace("/(tabs)"))} />
       </ScrollView>
     </Screen>
   );

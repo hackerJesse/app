@@ -10,6 +10,7 @@ import { printHtml, sharePdf } from "@/src/pdf";
 import { devicesReportHtml, inPeriod, serversReportHtml } from "@/src/reports";
 import { fonts, makeStyles } from "@/src/theme";
 import { Client, Server } from "@/src/types";
+import { tr } from "@/src/i18n";
 
 type Tab = "ativos" | "servidores";
 
@@ -59,7 +60,7 @@ export default function ReportsScreen() {
       if (share) await sharePdf(html, name);
       else await printHtml(html);
     } catch (e: any) {
-      notify("Falha ao gerar relatório", e?.message);
+      notify(tr("Falha ao gerar relatório"), e?.message);
     } finally {
       setBusy(false);
     }
@@ -70,23 +71,23 @@ export default function ReportsScreen() {
 
   return (
     <Screen>
-      <Header title="Relatórios" subtitle="Imprimir ou gerar PDF" back />
+      <Header title={tr("Relatórios")} subtitle={tr("Imprimir ou gerar PDF")} back />
       <Segmented options={[{ value: "ativos" as Tab, label: "Ativos e manutenções" }, { value: "servidores" as Tab, label: "Servidores" }]} value={tab} onChange={setTab} />
       <ScrollView contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
         {tab === "ativos" ? (
           <>
-            <SectionTitle title="Filtros" />
-            <Select label="Cliente" value={clientId} options={clientOptions} onChange={setClientId} testID="rep-client" />
-            <Select label="Tipo de ativo" value={kind} options={[{ value: "", label: "Todos os tipos" }, ...DEVICE_KINDS.map((k) => ({ value: k.value, label: k.label }))]} onChange={setKind} testID="rep-kind" />
-            <Text style={styles.label}>PERÍODO DE CADASTRO</Text>
+            <SectionTitle title={tr("Filtros")} />
+            <Select label={tr("Cliente")} value={clientId} options={clientOptions} onChange={setClientId} testID="rep-client" />
+            <Select label={tr("Tipo de ativo")} value={kind} options={[{ value: "", label: "Todos os tipos" }, ...DEVICE_KINDS.map((k) => ({ value: k.value, label: k.label }))]} onChange={setKind} testID="rep-kind" />
+            <Text style={styles.label}>{tr("PERÍODO DE CADASTRO")}</Text>
             <Row gap={8}>
-              <Input style={{ flex: 1 }} value={cFrom} onChangeText={setCFrom} placeholder="De (dd/mm/aaaa)" keyboardType="numbers-and-punctuation" testID="rep-created-from" />
-              <Input style={{ flex: 1 }} value={cTo} onChangeText={setCTo} placeholder="Até (dd/mm/aaaa)" keyboardType="numbers-and-punctuation" testID="rep-created-to" />
+              <Input style={{ flex: 1 }} value={cFrom} onChangeText={setCFrom} placeholder={tr("De (dd/mm/aaaa)")} keyboardType="numbers-and-punctuation" testID="rep-created-from" />
+              <Input style={{ flex: 1 }} value={cTo} onChangeText={setCTo} placeholder={tr("Até (dd/mm/aaaa)")} keyboardType="numbers-and-punctuation" testID="rep-created-to" />
             </Row>
-            <Text style={styles.label}>PERÍODO DAS MANUTENÇÕES</Text>
+            <Text style={styles.label}>{tr("PERÍODO DAS MANUTENÇÕES")}</Text>
             <Row gap={8}>
-              <Input style={{ flex: 1 }} value={mFrom} onChangeText={setMFrom} placeholder="De (dd/mm/aaaa)" keyboardType="numbers-and-punctuation" testID="rep-maint-from" />
-              <Input style={{ flex: 1 }} value={mTo} onChangeText={setMTo} placeholder="Até (dd/mm/aaaa)" keyboardType="numbers-and-punctuation" testID="rep-maint-to" />
+              <Input style={{ flex: 1 }} value={mFrom} onChangeText={setMFrom} placeholder={tr("De (dd/mm/aaaa)")} keyboardType="numbers-and-punctuation" testID="rep-maint-from" />
+              <Input style={{ flex: 1 }} value={mTo} onChangeText={setMTo} placeholder={tr("Até (dd/mm/aaaa)")} keyboardType="numbers-and-punctuation" testID="rep-maint-to" />
             </Row>
             <Card style={{ gap: 4 }} testID="rep-summary">
               <Text style={styles.kpi}>{filteredDevices.length} ativo(s) · {filteredMaint.length} manutenção(ões)</Text>
@@ -95,9 +96,9 @@ export default function ReportsScreen() {
           </>
         ) : (
           <>
-            <SectionTitle title="Filtros" />
-            <Select label="Cliente" value={srvClient} options={clientOptions} onChange={setSrvClient} testID="rep-srv-client" />
-            <Select label="Formato" value={mode} options={[{ value: "completo", label: "Completo — com configurações e métricas" }, { value: "resumo", label: "Resumo — uma linha por servidor" }]} onChange={setMode} testID="rep-srv-mode" />
+            <SectionTitle title={tr("Filtros")} />
+            <Select label={tr("Cliente")} value={srvClient} options={clientOptions} onChange={setSrvClient} testID="rep-srv-client" />
+            <Select label={tr("Formato")} value={mode} options={[{ value: "completo", label: "Completo — com configurações e métricas" }, { value: "resumo", label: "Resumo — uma linha por servidor" }]} onChange={setMode} testID="rep-srv-mode" />
             <Card style={{ gap: 4 }} testID="rep-srv-summary">
               <Text style={styles.kpi}>{filteredServers.length} servidor(es)</Text>
               <Text style={styles.hint}>
@@ -108,8 +109,8 @@ export default function ReportsScreen() {
         )}
         <View style={{ height: 4 }} />
         <Row gap={8}>
-          <Button title="Imprimir" icon="print-outline" onPress={() => run(false)} loading={busy} style={{ flex: 1 }} testID="rep-print" />
-          <Button title="PDF" icon="download-outline" variant="secondary" onPress={() => run(true)} loading={busy} testID="rep-pdf" />
+          <Button title={tr("Imprimir")} icon="print-outline" onPress={() => run(false)} loading={busy} style={{ flex: 1 }} testID="rep-print" />
+          <Button title={tr("PDF")} icon="download-outline" variant="secondary" onPress={() => run(true)} loading={busy} testID="rep-pdf" />
         </Row>
       </ScrollView>
     </Screen>

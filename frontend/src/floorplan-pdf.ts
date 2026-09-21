@@ -1,4 +1,5 @@
 import { fileUrl } from "@/src/api";
+import { tr } from "@/src/i18n";
 import { currentCompany, docHeaderHtml } from "@/src/brand";
 import { TOPOLOGY_CSS, topologySection } from "@/src/topology";
 import type { FloorPlan, Topology } from "@/src/types";
@@ -54,11 +55,11 @@ export function floorplanHtml(fp: FloorPlan, topologies: Topology[], imageRatio:
   </style></head><body>
   ${docHeaderHtml()}
   <h1>${fp.name || "Planta baixa"}</h1>
-  <div class="sub">${fp.client_name ? `Cliente: ${fp.client_name} · ` : ""}${fp.points.length} pontos de rede${fp.rooms.length ? ` · ${fp.rooms.length} cômodos` : ""}</div>
+  <div class="sub">${fp.client_name ? `${tr("Cliente")}: ${fp.client_name} · ` : ""}${fp.points.length} pontos de rede${fp.rooms.length ? ` · ${fp.rooms.length} cômodos` : ""}</div>
   <div class="plan">${background}${markers}</div>
   <div class="legend">${counts || "Nenhum ponto marcado"}</div>
   <h2>Pontos de rede (${fp.points.length})</h2>
-  <table><tr><th>Ponto</th><th>Tipo</th><th>Cômodo</th><th>Detalhes</th></tr>${rows || `<tr><td colspan="4" style="color:#999">Nenhum ponto</td></tr>`}</table>
+  <table><tr><th>Ponto</th><th>${tr("Tipo")}</th><th>${tr("Cômodo")}</th><th>${tr("Detalhes")}</th></tr>${rows || `<tr><td colspan="4" style="color:#999">Nenhum ponto</td></tr>`}</table>
   ${topos || (fp.client_id ? `<p style="color:#999;font-size:11px;margin-top:16px">Nenhuma topologia de rede cadastrada para este cliente.</p>` : "")}
   <p style="color:#999;font-size:10px;margin-top:24px">${currentCompany()}</p></body></html>`;
 }

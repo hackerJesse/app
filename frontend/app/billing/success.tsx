@@ -6,6 +6,7 @@ import { api } from "@/src/api";
 import { User, useAuth } from "@/src/auth";
 import { Button, Icon, Screen } from "@/src/components/ui";
 import { fonts, makeStyles, useTheme } from "@/src/theme";
+import { tr } from "@/src/i18n";
 
 export default function BillingSuccess() {
   const styles = useStyles();
@@ -42,9 +43,9 @@ export default function BillingSuccess() {
     <Screen>
       <View style={styles.center}>
         {status === "checking" ? <ActivityIndicator color={colors.brandPrimary} size="large" /> : <Icon name={status === "paid" ? "checkmark-circle" : "time-outline"} size={64} color={status === "paid" ? colors.success : colors.warning} />}
-        <Text style={styles.title}>{status === "checking" ? "Confirmando pagamento..." : status === "paid" ? "Pagamento confirmado!" : "Pagamento em processamento"}</Text>
-        <Text style={styles.hint}>{status === "paid" ? "Sua conta está ativa. Bem-vindo ao InfraManager." : "Assim que o Stripe confirmar, seu acesso será liberado automaticamente."}</Text>
-        <Button title={status === "paid" ? "Entrar no app" : "Voltar"} onPress={() => router.replace(status === "paid" ? "/(tabs)" : "/onboarding")} testID="billing-continue" />
+        <Text style={styles.title}>{status === "checking" ? "Confirmando pagamento..." : status === "paid" ? tr("Pagamento confirmado!") : tr("Pagamento em processamento")}</Text>
+        <Text style={styles.hint}>{status === "paid" ? tr("Sua conta está ativa. Bem-vindo ao InfraManager.") : tr("Assim que o Stripe confirmar, seu acesso será liberado automaticamente.")}</Text>
+        <Button title={status === "paid" ? tr("Entrar no app") : tr("Voltar")} onPress={() => router.replace(status === "paid" ? "/(tabs)" : "/onboarding")} testID="billing-continue" />
       </View>
     </Screen>
   );

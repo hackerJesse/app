@@ -1,4 +1,5 @@
 import type { TopoLink, TopoNode } from "@/src/types";
+import { tr } from "@/src/i18n";
 import { currentCompany, docHeaderHtml } from "@/src/brand";
 import { uid } from "@/src/types";
 
@@ -137,7 +138,7 @@ export function topologySection(t: { nodes: TopoNode[]; links: TopoLink[] }) {
     .map((n) => `<tr><td>${n.label}</td><td>${NODE_KIND_MAP[n.kind]?.label ?? n.kind}</td><td>${n.ip ?? ""}</td><td>${n.ports ?? ""}</td><td>${n.room ?? ""}</td></tr>`)
     .join("");
   return `<svg viewBox="${minX} ${minY} ${maxX - minX} ${maxY - minY}" xmlns="http://www.w3.org/2000/svg">${lines}${nodes}</svg>
-  <table><tr><th>Dispositivo</th><th>Tipo</th><th>IP</th><th>Portas</th><th>Local</th></tr>${rows}</table>`;
+  <table><tr><th>${tr("Dispositivo")}</th><th>${tr("Tipo")}</th><th>IP</th><th>${tr("Portas")}</th><th>${tr("Local")}</th></tr>${rows}</table>`;
 }
 
 export const TOPOLOGY_CSS = `
@@ -151,7 +152,7 @@ export const TOPOLOGY_CSS = `
 export function topologyHtml(t: { name: string; client_name?: string; nodes: TopoNode[]; links: TopoLink[] }) {
   return `<html><head><meta charset="utf-8"/><style>${TOPOLOGY_CSS}</style></head><body>
   ${docHeaderHtml()}
-  <h1>${t.name}</h1><div class="sub">${t.client_name ? `Cliente: ${t.client_name} · ` : ""}${t.nodes.length} dispositivos · ${t.links.length} conexões</div>
+  <h1>${t.name}</h1><div class="sub">${t.client_name ? `${tr("Cliente")}: ${t.client_name} · ` : ""}${t.nodes.length} dispositivos · ${t.links.length} conexões</div>
   ${topologySection(t)}
   <p style="color:#999;font-size:10px;margin-top:24px">${currentCompany()}</p></body></html>`;
 }
