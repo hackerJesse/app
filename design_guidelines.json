@@ -1,0 +1,165 @@
+{
+  "app_name": "N-Security InfraManager",
+  "personality": "7 Dark-First Utility DARK",
+  "personality_one_liner": "A high-performance, command-center interface designed for rapid technical data entry, live monitoring, and IT documentation.",
+  "color": {
+    "surface": "#0D0E12",
+    "onSurface": "#F1F2F4",
+    "surfaceSecondary": "#1A1B20",
+    "onSurfaceSecondary": "#E1E2E5",
+    "surfaceTertiary": "#26272D",
+    "onSurfaceTertiary": "#C1C3C8",
+    "surfaceInverse": "#FFFFFF",
+    "onSurfaceInverse": "#0D0E12",
+    "brand": "#FF8A00",
+    "brandPrimary": "#FF8A00",
+    "onBrandPrimary": "#1A0E00",
+    "brandSecondary": "#CC6E00",
+    "onBrandSecondary": "#FFF3E0",
+    "brandTertiary": "#4D2A00",
+    "onBrandTertiary": "#FFB74D",
+    "success": "#00E676",
+    "onSuccess": "#002611",
+    "warning": "#FFC400",
+    "onWarning": "#332700",
+    "error": "#FF3D00",
+    "onError": "#330A00",
+    "border": "#2E3038",
+    "borderStrong": "#454854",
+    "divider": "#1F2128",
+    "muted": "#8E929E"
+  },
+  "typography": {
+    "displayFontFamily": "Rajdhani",
+    "textFontFamily": "IBM Plex Sans",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Dense information architecture. Use 1px borders and sharp dividers instead of spacing for section separation. Minimize empty space to maximize data density.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 4,
+    "md": 8,
+    "lg": 12,
+    "pill": 999
+  },
+  "shadow_tier": "0",
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": "false",
+    "do's": [
+      "Use solid surfaceSecondary and surfaceTertiary to indicate elevation."
+    ],
+    "dont's": [
+      "Do not use blur or glassmorphism. It degrades readability in high-density technical dashboards."
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "solid surfaceSecondary",
+      "android": "solid surfaceSecondary",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "none",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Login",
+      "purpose": "Secure gateway for admin access.",
+      "states": {
+        "loading": "Amber spinner over dark technical background.",
+        "empty": "N/A",
+        "error": "Red error text below input fields."
+      },
+      "layout": "Full-bleed background image of dark server rack with vertical gradient scrim (transparent to surface). Form container at bottom 40%: Email/Pass inputs with sharp borders, Google Auth button, primary Login CTA."
+    },
+    {
+      "name": "Dashboard",
+      "purpose": "High-level overview of quotes, active clients, and server status.",
+      "states": {
+        "loading": "Skeleton blocks matching the metric grid.",
+        "empty": "No active data. Display prompt to create a Quote.",
+        "error": "Failed to fetch dashboard data. Retry CTA."
+      },
+      "layout": "Sticky header with user profile. Horizontal scroll row of oversized metric cards (Rajdhani font) for Quotes Pending, Offline Servers (Red accent). 2-column grid of quick actions below. Recent Activity feed at bottom."
+    },
+    {
+      "name": "Quotes",
+      "purpose": "Manage and export commercial and technical quotes.",
+      "states": {
+        "loading": "Skeleton list rows.",
+        "empty": "Illustration of empty folder. Primary CTA: 'Nova Cotação'.",
+        "error": "Failed to load quotes. Retry CTA."
+      },
+      "layout": "Top segmented control (Pending, Approved, Draft). List view of quotes. Each card shows Client, Value, and Status badge. Tap opens detail view: line items list, bottom sticky container with 'Edit PDF' and 'Export/Print' buttons."
+    },
+    {
+      "name": "RackBuilder",
+      "purpose": "Visual representation of up to 50U IT racks.",
+      "states": {
+        "loading": "Skeleton 50U rack.",
+        "empty": "Blank 50U rack.",
+        "error": "Failed to sync rack data."
+      },
+      "layout": "Vertical FlatList of 50 rows. Each row is 1U. Tap a slot to open a bottom sheet component picker (Switch, Server, Blank, Cable Guide). Filled slots show hardware icon, name, and take up multiple U's if required. Strict borders between U's."
+    },
+    {
+      "name": "NetworkTopology",
+      "purpose": "Packet Tracer-style network diagram and floor plan mapper.",
+      "states": {
+        "loading": "Spinner in center of canvas.",
+        "empty": "Prompt: 'Upload Floor Plan or Start Diagram'.",
+        "error": "Error loading topology."
+      },
+      "layout": "Pinch-to-zoom SVG/Canvas area. Floating action button for adding nodes (Router, Switch, PC). Tap a node to open bottom sheet for configuring IP/Ports and assigning links. Sticky bottom bar for PDF export."
+    },
+    {
+      "name": "ServerMap",
+      "purpose": "Geographical overview of managed servers across Brazil.",
+      "states": {
+        "loading": "Map rendering skeleton.",
+        "empty": "Map with no pins.",
+        "error": "Failed to load map/server status."
+      },
+      "layout": "Full-screen vector map of Brazil. Absolute positioned pulsing dots (Green = Online, Red = Offline). Tapping a dot pulls up a Gorhom bottom sheet showing Server IP, Domain, Specs (masked by default, tap to reveal) and connection tree."
+    }
+  ],
+  "images": {
+    "login_hero": {
+      "url": "https://images.unsplash.com/photo-1695668548342-c0c1ad479aee?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwyfHxkYXRhY2VudGVyJTIwc2VydmVyJTIwcmFjayUyMGRhcmt8ZW58MHx8fHwxNzg5NDA5NzI5fDA&ixlib=rb-4.1.0&q=85",
+      "dark": "https://images.unsplash.com/photo-1695668548342-c0c1ad479aee?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwyfHxkYXRhY2VudGVyJTIwc2VydmVyJTIwcmFjayUyMGRhcmt8ZW58MHx8fHwxNzg5NDA5NzI5fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Dark datacenter server rack"
+    },
+    "map_placeholder": {
+      "url": "https://images.unsplash.com/photo-1733094143973-914628ca87b8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwxfHxicmF6aWwlMjBtYXAlMjBtaW5pbWFsJTIwZGFya3xlbnwwfHx8fDE3ODk0MDk3Mjl8MA&ixlib=rb-4.1.0&q=85",
+      "dark": "https://images.unsplash.com/photo-1733094143973-914628ca87b8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwxfHxicmF6aWwlMjBtYXAlMjBtaW5pbWFsJTIwZGFya3xlbnwwfHx8fDE3ODk0MDk3Mjl8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Brazil Map Abstract Texture"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Apply Personality 7: Dark-First Utility DARK strictly. Avoid any soft, playful, or glassmorphic elements. The interface should feel like high-end IT monitoring software (e.g. Datadog, AWS, UniFi).",
+    "BANNED COLORS: Blue, Indigo, Purple, Navy. Use the defined Amber (#FF8A00) for primary actions, keeping the aesthetic industrial and tactical.",
+    "For the Rack Builder: Do not implement complex drag-and-drop. Use a tap-to-select flow where tapping an empty 'U' slot opens a Gorhom bottom sheet to pick the hardware component, which is a much more stable mobile pattern.",
+    "For the Network Topology: Ensure pinch-to-zoom is available on the diagram, and keep touch targets to a minimum of 44x44pt. Use bottom sheets for port-mapping rather than tapping tiny lines.",
+    "Data privacy: IP addresses, domains, and ports in the Server Map bottom sheet must have a secure 'tap-to-reveal' state to prevent shoulder surfing.",
+    "PDF Generation: Ensure the sticky 'Export/Print' button is always anchored above the safe area on Quotes and Topology screens, unaffected by the scroll view."
+  ]
+}

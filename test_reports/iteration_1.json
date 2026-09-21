@@ -1,0 +1,36 @@
+{
+  "summary": "Full backend + frontend test of N-Security InfraManager. Backend 12/12 pytest passing. Frontend all critical flows verified on mobile viewport 390x844: login/wrong-password, clients CRUD, quotes (client select, add item, total, save→/quote/<id>), rack builder (48U, empty→switch48→slot render), topology (auto-generate 14 nodes, edit node), floor plan (draw mode, room, point, save), servers (create, check-all→online, reveal-toggle→spec-host), devices (create notebook + specs + preventive_months, add corrective+preventive, history cards, 'Última realizada' updated, show-qr, print-label present, device-edit prefilled), scan (asset tag navigates to detail, unknown code shows scan-error), dashboard metric-devices→devices tab, device-search filter. Applied 1 backend fix (Maintenance.device_id made Optional since backend already overrides it from URL path; previous schema caused all POST /devices/{id}/maintenances from frontend to fail with 422). No deprecated Expo packages detected.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Add maintenance (preventiva/corretiva) from device detail",
+        "issue": "FIXED: Frontend does not send device_id in POST body; backend MaintenanceModel required device_id, returning 422. Made device_id Optional in backend/server.py (endpoint already overrides device_id from URL param). Verified: add-corrective + add-preventive now return 200 and update device.last_preventive.",
+        "affected_testIDs": ["add-corrective", "add-preventive", "maint-save"]
+      }
+    ],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional hardening: also update frontend addMaint mutation to send device_id explicitly so the payload matches the schema exactly (currently works because backend overrides from URL, but keeping both is safer).",
+    "Minor UX: on Dashboard metric-clients / metric-racks / metric-servers, verify similar deep links (only metric-devices was tested)."
+  ],
+  "critical_code_review_comments": [
+    "backend/server.py MaintenanceModel.device_id was required but always overridden server-side (line 708). Now Optional — safer contract.",
+    "backend/server.py uses @app.on_event startup/shutdown which is deprecated in FastAPI (should migrate to lifespan). Non-blocking.",
+    "All React Native components correctly use View/Text/TouchableOpacity via ui.tsx wrapper; StyleSheet used through makeStyles. testIDs are consistently applied across screens."
+  ],
+  "updated_files": ["/app/backend/server.py", "/app/backend/tests/backend_test.py", "/app/backend/tests/__init__.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "Created and left in DB for the admin user during testing: TEST_UI_Client (client), 1 quote (300 total), TEST_Rack_UI (rack), TEST_Topo_UI (topology), TEST_FP_UI (floorplan), TEST_Server_UI (server, Manaus), 1 device TEST_ReTest with corrective+preventive maintenance history. Backend pytest data uses TEST_ prefix and cleans up.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend base URL is https://vendor-rack-plan.preview.emergentagent.com. Admin creds in /app/memory/test_credentials.md. All tabs are file-routed under app/(tabs)/ — direct navigation to /quotes, /infra, /map, /devices works. Sheets are RN Modals — closing via data-testid=sheet-close or by clicking outside. Frontend now works end-to-end after backend fix in MaintenanceModel. No deprecated packages (no expo-av, expo-barcode-scanner, expo-background-fetch).",
+  "rca_of_issue": "RCA — Maintenance 422: Pydantic model MaintenanceModel declared device_id as required string. Frontend addMaint mutation sends only {kind, description, technician, parts, date, cost} without device_id, so Pydantic validation returned 422 before the endpoint could inject device_id from the URL. Fix: make device_id Optional[str] = '' in MaintenanceModel; endpoint continues to set doc['device_id'] = item_id from path. Reproduction: POST /api/devices/{id}/maintenances with body missing device_id returned 422 before fix, 200 after."
+}
