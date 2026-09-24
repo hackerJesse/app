@@ -1,0 +1,50 @@
+DIAG_START
+Mon Sep 21 23:40:00 UTC 2026
+--PS--
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   4324  2984 ?        Ss   23:27   0:00 /bin/bash /entrypoint.sh
+root           7  0.0  0.0   4196  2028 ?        S    23:27   0:00 /bin/bash /entrypoint.sh
+root          10  0.8  0.1 763976 110576 ?       Sl   23:27   0:06 /opt/plugins-venv/bin/python /opt/plugins-venv/bin/uvicorn plugins.tools.agent.server:app --host 0.0.0.0 --port 8010 --workers 1 --no-access-log
+root          66  0.1  0.0  43176 32500 ?        S    23:27   0:00 /opt/plugins-venv/bin/python /opt/plugins-venv/bin/e1_monitor cd5e8045-0042-4b66-ab01-99dc0b14e10b https://demobackend.emergentagent.com --interval 1
+root          94  0.0  0.0  37268 26264 ?        Ss   23:27   0:00 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+root         102  0.0  0.0  13472  9168 ?        S    23:27   0:00 nginx: master process /usr/sbin/nginx -g daemon off; -c /etc/nginx/nginx-code-server.conf
+root         107  0.0  0.0 101604 25888 ?        Sl   23:27   0:00 /root/.venv/bin/python /root/.venv/bin/uvicorn server:app --host 0.0.0.0 --port 8001 --workers 1 --reload
+root         116  0.4  0.2 613020 178572 ?       Sl   23:27   0:03 /usr/bin/mongod --bind_ip_all --wiredTigerCacheSizeGB 0.25
+root         137  0.0  0.0  14260  5192 ?        S    23:27   0:00 nginx: worker process
+root         155  0.0  0.0  15904 11104 ?        S    23:27   0:00 /root/.venv/bin/python -c from multiprocessing.resource_tracker import main;main(4)
+root         156  0.1  0.1 538080 76680 ?        Sl   23:27   0:01 /root/.venv/bin/python -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=5, pipe_handle=7) --multiprocessing-fork
+root         426  0.0  0.1 1399940 82724 ?       Sl   23:28   0:00 node /bin/yarn expo start --port 3000
+root         438  0.0  0.0   2336  1400 ?        S    23:28   0:00 /bin/sh -c /app/frontend/node_modules/.bin/expo start --port 3000
+root         439  1.0  0.2 2204176 170404 ?      Sl   23:28   0:06 /usr/bin/node /app/frontend/node_modules/.bin/expo start --port 3000
+root         541  0.0  0.0   4108  2360 ?        S    23:28   0:00 cron -f -L 15
+root         582  0.0  0.1 1261088 72652 ?       Sl   23:29   0:00 /usr/lib/code-server/lib/node /usr/lib/code-server --config /root/.config/code-server/config.yaml /app
+root         601  3.2  0.2 1531080 185712 ?      Sl   23:29   0:21 /usr/lib/code-server/lib/node /usr/lib/code-server/out/node/entry
+root        1200  0.0  0.0 1399828 62040 ?       Sl   23:29   0:00 /usr/lib/code-server/lib/node /usr/lib/code-server/lib/vscode/out/bootstrap-fork --type=fileWatcher
+root        1266  0.1  0.1 9872648 107552 ?      Sl   23:29   0:00 /usr/lib/code-server/lib/node /usr/lib/code-server/lib/vscode/out/bootstrap-fork --type=agentHost --logsPath /root/.local/share/code-server/logs/20260921T232909 --user-data-dir /root/.local/share/code-server --telemetry-level all
+root        1566  1.3  0.2 1557392 172528 ?      Sl   23:29   0:08 /usr/lib/code-server/lib/node --dns-result-order=ipv4first /usr/lib/code-server/lib/vscode/out/bootstrap-fork --type=extensionHost --transformURIs --useHostProxy=false
+root        1626  0.1  0.3 10931200 255868 ?     Sl   23:29   0:00 /usr/lib/code-server/lib/node /usr/lib/code-server/lib/vscode/node_modules/@github/copilot-linux-arm64/index.js --headless --no-auto-update --log-level info --stdio --no-auto-login
+root        2048  0.0  0.0 1223736 63080 ?       Sl   23:29   0:00 /usr/lib/code-server/lib/node /usr/lib/code-server/lib/vscode/extensions/json-language-features/server/dist/node/jsonServerMain --node-ipc --clientProcessId=1566
+root        2540  0.0  0.0 283876 54096 ?        Sl   23:29   0:00 /usr/local/bin/python /root/.local/share/code-server/extensions/ms-python.python-2026.4.0-universal/python_files/run-jedi-language-server.py
+root        2541  0.1  0.1 1282492 69744 ?       Sl   23:29   0:00 /usr/lib/code-server/lib/node /usr/lib/code-server/lib/vscode/out/bootstrap-fork --type=ptyHost --logsPath /root/.local/share/code-server/logs/20260921T232909
+root        2650  0.0  0.0  31088 24680 ?        S    23:29   0:00 /usr/local/bin/python /root/.local/share/code-server/extensions/ms-python.python-2026.4.0-universal/python_files/lib/jedilsp/jedi/inference/compiled/subprocess/__main__.py /root/.local/share/code-server/extensions/ms-python.python-2026.4.0-universal/python_files/lib/jedilsp 3.11.16
+root        2703  0.0  0.0   4592  3668 pts/0    Ss+  23:29   0:00 /bin/bash --init-file /usr/lib/code-server/lib/vscode/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+root        3269  0.0  0.0 1400112 61836 ?       Sl   23:30   0:00 /usr/lib/code-server/lib/node /usr/lib/code-server/lib/vscode/out/bootstrap-fork --type=fileWatcher
+root        3625  1.2  0.2 1548404 152272 ?      Sl   23:30   0:07 /usr/lib/code-server/lib/node --dns-result-order=ipv4first /usr/lib/code-server/lib/vscode/out/bootstrap-fork --type=extensionHost --transformURIs --useHostProxy=false
+root        3788  0.0  0.1 1224760 68556 ?       Sl   23:30   0:00 /usr/lib/code-server/lib/node /usr/lib/code-server/lib/vscode/extensions/json-language-features/server/dist/node/jsonServerMain --node-ipc --clientProcessId=3625
+root        5566  0.0  0.0   4592  3684 pts/1    Ss+  23:30   0:00 /bin/bash --init-file /usr/lib/code-server/lib/vscode/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+root        9205  0.0  0.0   4196  2948 pts/2    Ss+  23:40   0:00 bash -c echo DIAG_START > /app/diag_log.txt; date >> /app/diag_log.txt; echo --PS-- >> /app/diag_log.txt; ps aux >> /app/diag_log.txt 2>&1; echo --JAVA-- >> /app/diag_log.txt; which java >> /app/diag_log.txt 2>&1; dpkg -l | grep -i openjdk >> /app/diag_log.txt 2>&1; echo --SDK-- >> /app/diag_log.txt; ls -la /opt/android-sdk >> /app/diag_log.txt 2>&1; echo --DF-- >> /app/diag_log.txt; df -h >> /app/diag_log.txt 2>&1; echo DIAG_DONE >> /app/diag_log.txt
+root        9208  0.0  0.0   8520  4200 pts/2    R+   23:40   0:00 ps aux
+--JAVA--
+--SDK--
+ls: cannot access '/opt/android-sdk': No such file or directory
+--DF--
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          95G   21G   74G  22% /
+tmpfs            64M     0   64M   0% /dev
+/dev/nvme0n4    9.8G  5.7G  4.1G  59% /app
+/dev/nvme0n1p1   95G   21G   74G  22% /etc/hosts
+shm              64M     0   64M   0% /dev/shm
+tmpfs            32G     0   32G   0% /proc/acpi
+tmpfs            32G     0   32G   0% /proc/scsi
+tmpfs            32G     0   32G   0% /sys/firmware
+DIAG_DONE

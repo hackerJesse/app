@@ -1,3 +1,11 @@
+INSPECT_START
+--ENV--
+EXPO_TUNNEL_SUBDOMAIN=vendor-rack-plan
+EXPO_PACKAGER_HOSTNAME=https://vendor-rack-plan.preview.emergentagent.com
+EXPO_PUBLIC_BACKEND_URL=https://vendor-rack-plan.preview.emergentagent.com
+EXPO_USE_FAST_RESOLVER="1"
+METRO_CACHE_ROOT=/app/frontend/.metro-cache
+EXPO_PACKAGER_PROXY_URL=https://vendor-rack-plan.preview.emergentagent.com--APPJSON--
 {
   "expo": {
     "name": "Zatriz",
@@ -75,4 +83,16 @@
     },
     "owner": "jessenas-team"
   }
+}--EASJSON--
+{
+  "cli": { "version": ">= 10.0.0" },
+  "build": {
+    "preview": { "android": { "buildType": "apk" } },
+    "production": {}
+  }
 }
+--GREP-API--
+/app/frontend/src/api.ts:5:const BASE = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
+/app/frontend/app/onboarding.tsx:51:      const origin = Platform.OS === "web" && typeof window !== "undefined" ? window.location.origin : process.env.EXPO_PUBLIC_BACKEND_URL ?? "";
+/app/frontend/app/(tabs)/map.tsx:54:    queryFn: () => api(`/servers/${sel!.id}/agent-script?os=${agentOs}&base=${encodeURIComponent(process.env.EXPO_PUBLIC_BACKEND_URL ?? "")}`),
+INSPECT_DONE
